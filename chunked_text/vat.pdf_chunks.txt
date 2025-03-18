@@ -1,0 +1,1303 @@
+See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/3950332
+
+VAT: A tool for visual assessment of (cluster) tendency
+
+Conference Paper · February 2002
+
+DOI: 10.1109/IJCNN.2002.1007487 · Source: IEEE Xplore
+
+CITATIONS
+405
+
+READS
+6,502
+
+2 authors, including:
+
+James C. Bezdek
+
+University of Missouri
+
+428 PUBLICATIONS   63,610 CITATIONS   
+
+SEE PROFILE
+
+                                                           
+* Research supported by ONR Grant 00014-96-1-0642.
+Abstract-A method is given for visually assessing the cluster 
+tendency of a set of Objects O = {o1,…,on} when they are 
+represented either as object vectors or by numerical pairwise 
+dissimilarity values.
+The objects are reordered and the 
+reordered matrix of pair wise object dissimilarities is displayed 
+as an intensity image.
+Clusters are indicated by dark blocks of 
+pixels along the diagonal.
+I.
+INTRODUCTION 
+
+We consider a type of preliminary data analysis related to 
+the pattern recognition problem of clustering.
+
+---
+
+I.
+INTRODUCTION 
+
+We consider a type of preliminary data analysis related to 
+the pattern recognition problem of clustering.
+Clustering or 
+cluster analysis is the problem of partitioning a set of objects 
+O = {o1,…, on} into c self-similar subsets based on available 
+data and some well-defined measure of (cluster) similarity.
+In some cases, a geometric description of the clusters (e.g.
+by 
+“cluster centers” in data space) is also desired and some 
+clustering methods are able to produce such geometric 
+descriptors.
+The type of clusters found is strongly related to 
+the properties of the mathematical model that underlies the 
+clustering method.
+All clustering algorithms will find an 
+arbitrary (up to 1 ≤ c ≤ n) number of clusters, even if no 
+“actual” clusters exist.
+Therefore, a fundamentally important 
+question to ask before applying any particular (and 
+potentially biasing) clustering algorithm is: Are clusters 
+present at all?
+The problem of determining whether clusters are present as 
+a step prior to actual clustering is called the assessing of 
+clustering tendency.
+
+---
+
+Therefore, a fundamentally important 
+question to ask before applying any particular (and 
+potentially biasing) clustering algorithm is: Are clusters 
+present at all?
+The problem of determining whether clusters are present as 
+a step prior to actual clustering is called the assessing of 
+clustering tendency.
+Various formal (statistically based) and 
+informal techniques for tendency assessment are discussed in 
+Jain and Dubes [1] and Everitt [2].
+None of the existing 
+approaches is completely satisfactory (nor will they ever be).
+The purpose of this note is to add a simple and intuitive 
+visual approach to the existing repertoire of tendency 
+assessment tools.
+Visual approaches for various data analysis problems have 
+been widely studied in the last 25 years; Tukey [3] and 
+Cleveland [4] are standard sources for many visual 
+techniques.
+The visual approach for assessing cluster 
+tendency introduced here can be used in all cases involving 
+numerical data.
+It is both convenient and expected that new 
+methods in clustering have a catchy acronym.
+Consequently, 
+we call this new tool VAT (visual assessment of tendency).
+
+---
+
+It is both convenient and expected that new 
+methods in clustering have a catchy acronym.
+Consequently, 
+we call this new tool VAT (visual assessment of tendency).
+The VAT approach presents pair wise dissimilarity 
+information about the set of objects O = {o1,…, on} as a 
+square digital image with n2 pixels, after the objects are 
+suitably reordered so that the image is better able to highlight 
+potential cluster structure.
+To go further into the VAT 
+approach requires some additional background on the types 
+of data typically available to describe the set O = {o1,…, on}.
+There are two common data representations of O upon 
+which clustering can be based.
+When each object in O is 
+represented by a (column) vector x in
+s
+ℜ, the set X = 
+
+{x1,…,xn} ⊂ 
+s
+ℜ
+is called an object data representation of 
+O.
+The kth component of the ith feature vector (xki) is the 
+value of the kth feature (e.g., height, weight, length, etc.)
+of 
+the ith object.
+It is in this data space that practitioners 
+sometimes seek geometrical descriptors of the clusters.
+Alternatively, when each pair of objects in O is represented 
+by a relationship, then we have relational data.
+
+---
+
+It is in this data space that practitioners 
+sometimes seek geometrical descriptors of the clusters.
+Alternatively, when each pair of objects in O is represented 
+by a relationship, then we have relational data.
+The most 
+common case of relational data is when we have (a matrix of) 
+dissimilarity data, say R = [Rij] , where Rij is the pair wise 
+dissimilarity (usually a distance) between objects oi and oj, 
+for 1 ≤  i, j ≤ n.  More generally, R can be a matrix of 
+similarities based on a variety of measures [5,6].
+The VAT tool is widely applicable because it displays a 
+reordered form of dissimilarity data, which itself can always 
+be obtained from the original data for O.
+If the original data 
+consists of a matrix of pair wise  (symmetric) similarities S = 
+[Sij], then dissimilarities can be obtained through several 
+simple transformations.
+For example, we can take 
+  
+Rij = Smax – Sij,   
+        (1) 
+ 
+where Smax denotes the largest similarity value.
+If the original 
+data set consists of object data X = {x1,…,xn} ⊂ 
+s
+ℜ, then Rij 
+
+can be computed as Rij = 
+j
+i
+x
+x −
+, using any convenient 
+
+norm on
+s
+ℜ.
+
+---
+
+For example, we can take 
+  
+Rij = Smax – Sij,   
+        (1) 
+ 
+where Smax denotes the largest similarity value.
+If the original 
+data set consists of object data X = {x1,…,xn} ⊂ 
+s
+ℜ, then Rij 
+
+can be computed as Rij = 
+j
+i
+x
+x −
+, using any convenient 
+
+norm on
+s
+ℜ.
+If the original data has missing components (is 
+incomplete), then any existing data imputation scheme can be 
+used to “fill in” the missing part of the data prior to 
+processing.
+The ultimate purpose of imputing data here is 
+simply to get a very rough picture of the cluster tendency in 
+O.  Consequently, sophisticated imputation schemes, such as 
+those based on the expectation-maximization (EM) algorithm 
+in Dempster, Laird and Rubin [7], are unnecessarily 
+expensive in both complexity and computation time.
+For 
+incomplete object data, we would suggest the Dixon [8] 
+scheme, which generates a pair wise Euclidean (or other 
+norm) dissimilarity Rij from incomplete xi and xj simply by 
+using all features common to both object data, and then 
+properly scaling the result, based on how many of the s 
+possible features are actually used.
+
+---
+
+The ultimate purpose of imputing data here is 
+simply to get a very rough picture of the cluster tendency in 
+O.  Consequently, sophisticated imputation schemes, such as 
+those based on the expectation-maximization (EM) algorithm 
+in Dempster, Laird and Rubin [7], are unnecessarily 
+expensive in both complexity and computation time.
+For 
+incomplete object data, we would suggest the Dixon [8] 
+scheme, which generates a pair wise Euclidean (or other 
+norm) dissimilarity Rij from incomplete xi and xj simply by 
+using all features common to both object data, and then 
+properly scaling the result, based on how many of the s 
+possible features are actually used.
+For missing dissimilarity 
+values (Rij), one of the triangle inequality schemes in 
+Hathaway and Bezdek [9] should be sufficiently accurate.
+We refer the reader interested in learning more about missing 
+data and imputation to Little and Rubin [10] and Schafer 
+[11].
+So, we can assume without loss that dissimilarity data of 
+the type needed for a VAT display can be easily obtained, 
+whether the original data description of O is object or 
+relational, and whether the data are complete or incomplete.
+
+---
+
+We refer the reader interested in learning more about missing 
+data and imputation to Little and Rubin [10] and Schafer 
+[11].
+So, we can assume without loss that dissimilarity data of 
+the type needed for a VAT display can be easily obtained, 
+whether the original data description of O is object or 
+relational, and whether the data are complete or incomplete.
+Let R be an n × n dissimilarity matrix corresponding to the 
+set O = {o1,…, on}.
+We assume that R satisfies the following 
+(metric) conditions for all 1 ≤ i, j  ≤ n: 
+Rij   ≥  0  
+ 
+      (2a) 
+ 
+ 
+ 
+Rij  =  Rji 
+ 
+      (2b) 
+ 
+ 
+ 
+Rii  =  0  
+ 
+      (2c) 
+We display  R as an intensity image I, which we call a 
+dissimilarity image.
+The intensity or gray level gij of pixel 
+(i,j) depends on the value of Rij.
+The value Rij = 0 
+corresponds to gij = 0 (pure black);  the value Rij = Rmax, 
+where Rmax denotes the largest dissimilarity value in R, gives 
+gij = Rmax  (pure white).
+Intermediate values of Rij produce 
+pixels with intermediate levels of gray in a set of gray levels 
+G = {G1,…,Gm}.
+The images shown below use 256 equally 
+spaced gray levels, with G1 = 0 (black) and Gm = Rmax 
+(white).
+
+---
+
+Intermediate values of Rij produce 
+pixels with intermediate levels of gray in a set of gray levels 
+G = {G1,…,Gm}.
+The images shown below use 256 equally 
+spaced gray levels, with G1 = 0 (black) and Gm = Rmax 
+(white).
+The displayed gray level of pixel (i,j) is the level gij 
+∈ G that is closest to Rij.
+As an example, Fig.
+1 lists a small dissimilarity matrix and 
+its corresponding image.
+The 0 values on the main diagonal 
+of R generate main diagonal pixels that are black.
+Notice also 
+that the largest dissimilarity value (0.78) gives two white 
+pixels in the dissimilarity image.
+R =
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+74
+.0
+19
+.0
+78
+.0
+16
+.0
+74
+.0
+0
+55
+.0
+12
+.0
+71
+.0
+
+19
+.0
+55
+.0
+0
+59
+.0
+19
+.0
+78
+.0
+12
+.0
+59
+.0
+0
+73
+.0
+
+16
+.0
+71
+.0
+19
+.0
+73
+.0
+0
+   
+
+   = I 
+
+Fig.
+1.
+A dissimilarity matrix and its corresponding 
+dissimilarity image.
+Does the image in Fig.
+1 indicate that clusters are likely for 
+the five objects underlying the relational data shown there?
+More generally, can a dissimilarity image indicate the 
+presence of clusters?
+
+---
+
+1 indicate that clusters are likely for 
+the five objects underlying the relational data shown there?
+More generally, can a dissimilarity image indicate the 
+presence of clusters?
+We surmise that the usefulness of a 
+dissimilarity image for visually assessing cluster tendency 
+depends crucially on the ordering of the rows and columns of 
+R.  We will attempt to reorder the objects {o1,o2,…,on} as 
+{ok1 , ok2 , … , okn} so that, to whatever degree possible, if ki is 
+near kj, then oki is similar to okj.
+In this case, the 
+
+corresponding ordered dissimilarity image (ODI) I~ will often 
+indicate cluster tendency in the data by dark blocks of pixels 
+along the main diagonal.
+The ordering is accomplished by 
+processing elements in the dissimilarity matrix R (rather than 
+
+ 
+ 
+Fig.
+2.
+Scatterplot of Data Set A.
+Fig.
+3.
+Scatterplot and dissimilarity image for 
+Data Set A (original random ordering).
+Fig.
+4.
+Scatterplot and ODI for Data Set A (reordered) 
+
+denote the set of all ordered index pairs (i,j) in I × J such that 
+Rij   = 
+}
+R
+{
+min
+arg
+pq
+J
+q
+,I
+p
+∈
+∈
+.
+
+---
+
+4.
+Scatterplot and ODI for Data Set A (reordered) 
+
+denote the set of all ordered index pairs (i,j) in I × J such that 
+Rij   = 
+}
+R
+{
+min
+arg
+pq
+J
+q
+,I
+p
+∈
+∈
+.
+This differs from the usual meaning 
+
+of “arg min” only in that a call to arg min (f(*)) ordinarily 
+returns only one value of (*) that minimizes f, whereas here 
+we collect all values of (*) that yield the (same) minimizing 
+value.
+The “arg max” notation is defined similarly.
+The 
+algorithm for producing an ordered dissimilarity matrix R~  = 
+[Rkikj] from the original dissimilarity matrix R is now given.
+The permuted indices of the n objects are stored in an array 
+P[ ], with P(i) = ki, i = 1, …, n. 
+ 
+ 
+VAT Ordering and Display Algorithm 
+ 
+Step 1 Set K = {1,2,…,n}; I = J = ∅; P[0] = (0,…,0).
+Step 2 Select (i,j) ∈ 
+}
+R
+{
+max
+arg
+pq
+K
+q
+,
+K
+p
+∈
+∈
+.
+Set P(1) = i; I = {i}; and J =  K – {i}.
+Step 3 For r = 2,…, n: 
+       Select (i,j) ∈ 
+}
+R
+{
+min
+arg
+pq
+J
+q
+,I
+p
+∈
+∈
+.
+Set P(r) = j;  Replace I !
+I∪{j} and  J !
+J–{j}.
+
+---
+
+I∪{j} and  J !
+J–{j}.
+Next r. 
+Step 4 Obtain the ordered dissimilarity matrix R~  using the 
+ordering array P as:
+ij
+R~  = 
+)j(
+P
+)i(
+P
+R
+, for 1 ≤ i,j ≤ n. 
+
+Step 5 Display the reordered matrix R~ as the ODI I~  using 
+ 
+the conventions given above.
+We make a few comments.
+For convenience, think of the 
+objects as ordered points in space (e.g., an object data 
+
+R =
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+74
+.0
+19
+.0
+78
+.0
+16
+.0
+74
+.0
+0
+55
+.0
+12
+.0
+71
+.0
+
+19
+.0
+55
+.0
+0
+59
+.0
+19
+.0
+78
+.0
+12
+.0
+59
+.0
+0
+73
+.0
+
+16
+.0
+71
+.0
+19
+.0
+73
+.0
+0
+   
+
+   = I 
+
+                   
+
+VAT
+
+ 
+
+  R~  =
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+16
+.0
+19
+.0
+74
+.0
+78
+.0
+16
+.0
+0
+19
+.0
+71
+.0
+73
+.0
+
+19
+.0
+19
+.0
+0
+55
+.0
+59
+.0
+74
+.0
+71
+.0
+55
+.0
+0
+12
+.0
+
+78
+.0
+73
+.0
+59
+.0
+12
+.0
+0
+  
+
+   = I~  
+
+Fig.
+5.
+Results of applying the VAT algorithm to Data Set A.
+The lower view in Fig.
+5 contains the pair (
+I~
+,
+R~
+).
+Our 
+inference from I~  is that the objects underlying R lie in two 
+small clusters, one having two objects, the other with three.
+Examination of R~  confirms this, as it possesses two diagonal 
+blocks of sizes 2 × 2 and 3 × 3 which evidently correspond to 
+the substructure visually suggested by I~ .
+III.
+
+---
+
+Examination of R~  confirms this, as it possesses two diagonal 
+blocks of sizes 2 × 2 and 3 × 3 which evidently correspond to 
+the substructure visually suggested by I~ .
+III.
+RELATIVES OF VAT 
+
+ 
+We can roughly group visual display methods into three 
+categories: visual displays of clusters, visual displays to find 
+clusters, and visual displays to assess tendency.
+(Admittedly, 
+there is a very fine line distinguishing methods in the second 
+and third groups.)
+The earliest published reference we can 
+find that discusses visual displays (as images) of clusters is 
+the 1973 SHADE approach of Ling [13].
+SHADE 
+approximates what is now regarded as a nice digital image 
+
+We expect dark, block structure along the main diagonal of 
+the ODI for data sets containing well-separated clusters (such 
+as those in Fig.
+3).
+As the degree of separation between 
+clusters decreases, the clarity of dark diagonal blocks 
+diminishes.
+To illustrate this, we will use normal mixture 
+data sets similar, to those used in Bezdek and Pal [14] to 
+study various cluster validity schemes.
+(Cluster validity is 
+the post-clustering problem of determining if a particular 
+computed clustering is consistent with the data.)
+
+---
+
+To illustrate this, we will use normal mixture 
+data sets similar, to those used in Bezdek and Pal [14] to 
+study various cluster validity schemes.
+(Cluster validity is 
+the post-clustering problem of determining if a particular 
+computed clustering is consistent with the data.)
+We describe 
+how the normal mixtures are generated.
+Let ei denote the ith unit vector in 
+4
+ℜ and I4 denote the 4 x 
+4 identity matrix.
+First, we generate a set of 128 4dimensional observations from a multivariate normal 
+distribution having mean vector (0,0,0,0)T and covariance 
+matrix I4.
+The 128 observations are then divided into 4 
+groups of 32 each (so c = 4).
+For 1 ≤ i ≤ 4, the ith group is 
+altered by adding α to the ith component of each of the 32 
+points.
+(This is statistically equivalent to generating the ith 
+group of observations from a multivariate normal distribution 
+with mean µi = αei and covariance matrix I.)
+In all, we use 
+the 5 values α = 4, 3, 2, 1, and 0 to get 5 data sets, each 
+derived from the original 128 points.
+We denote the normal 
+data set corresponding to a given value of α by Normal(α).
+
+---
+
+In all, we use 
+the 5 values α = 4, 3, 2, 1, and 0 to get 5 data sets, each 
+derived from the original 128 points.
+We denote the normal 
+data set corresponding to a given value of α by Normal(α).
+For example, the distributional means of the sample 
+Nomal(4) are: µ1 = (4,0,0,0)T; µ2 = (0,4,0,0)T; µ3 = (0,0,4,0)T; 
+
+ 
+Fig.
+6.
+Random and ordered dissimilarity images for Normal(4) data.
+Fig.
+7.
+Random and ordered dissimilarity images for Normal(3) data.
+Fig.
+8.
+Random and ordered dissimilarity images for Normal(2) data.
+Fig.
+9.
+Random and ordered dissimilarity images for Normal(1) data.
+Fig.
+10.
+Random and ordered dissimilarity images for Normal(0) data.
+Figs.
+6-10 give some information about the degree of 
+separation needed for cluster-indicating blocks to appear on 
+the diagonal of the ODI.
+The blocks are clear for α = 4 and 
+3, and deteriorate dramatically for α = 2.
+ODI’s of the type 
+in Figs.
+8-10 are typical of data sets that do not have well 
+separated clusters.
+We next give an ordered dissimilarity image for the 
+ubiquitous IRIS data.
+We use the “real” version of the data 
+as discussed in [15].
+The original object data consists of 
+measurements of 4 features of each of 150 irises.
+
+---
+
+We use the “real” version of the data 
+as discussed in [15].
+The original object data consists of 
+measurements of 4 features of each of 150 irises.
+The 150 
+irises are of three different physical types, and 50 of each 
+type were used to generate the original object data.
+Thus, the 
+IRIS data has three physically labeled classes.
+However, it is 
+well known that two of the three flower types yield data that 
+greatly overlap in 
+4
+ℜ, so it is often argued that the unlabeled 
+data are naturally clustered into 2 (geometrically welldefined) clusters.
+Relational data, randomly ordered, were 
+generated as pair wise Euclidean distances between each pair 
+of object data.
+Fig.
+11 gives the random and ordered 
+dissimilarity images for the IRIS data.
+The ODI indicates 
+that there are 2 well-separated clusters.
+This assessment  
+agrees with our intuition, and with results obtained in other 
+ways in earlier published studies [19].
+Fig.
+11.
+Random and ordered dissimilarity images for the IRIS data.
+Our next example uses a small set of real data from Gowda 
+and Diday[16].
+
+---
+
+Random and ordered dissimilarity images for the IRIS data.
+Our next example uses a small set of real data from Gowda 
+and Diday[16].
+These data are obtained by applying a 
+similarity measure to 5-dimensional object data, which has 
+four quantitative, and one nominal qualitative feature values 
+for each of eight different types of oil.
+The dissimilarity data, 
+obtained by converting the similarity data from [16] to 
+dissimilarity data using (1) and then randomly reordering, is 
+given by 
+ 
+
+RFO  =  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+850
+.0
+315
+.0
+880
+.1
+160
+.0
+360
+.1
+160
+.1
+380
+.0
+
+850
+.0
+0
+560
+.0
+010
+.1
+650
+.0
+110
+.2
+960
+.1
+150
+.1
+315
+.0
+560
+.0
+0
+615
+.1
+0
+695
+.1
+515
+.1
+550
+.0
+
+880
+.1
+010
+.1
+615
+.1
+0
+670
+.1
+070
+.3
+890
+.2
+580
+.1
+
+160
+.0
+650
+.0
+0
+670
+.1
+0
+445
+.1
+280
+.1
+375
+.0
+
+360
+.1
+110
+.2
+695
+.1
+070
+.3
+445
+.1
+0
+130
+.0
+760
+.1
+
+160
+.1
+960
+.1
+515
+.1
+890
+.2
+280
+.1
+130
+.0
+0
+555
+.1
+
+380
+.0
+150
+.1
+550
+.0
+580
+.1
+375
+.0
+760
+.1
+555
+.1
+0
+
+ 
+
+ 
+ 
+Fig.
+12 gives the random and ordered images for RFO.
+The 
+ODI indicates clusters.
+The clustering approach in [16] 
+divides the 8 types of oils into c = 3 clusters.
+
+---
+
+The 
+ODI indicates clusters.
+The clustering approach in [16] 
+divides the 8 types of oils into c = 3 clusters.
+Specifically, 
+the first 2 rows (or columns) correspond to C1 = {Beeftallow, Lard}; rows 3-6 correspond to C2 = {Olive oil, 
+Cotton-seed, Sesame oil, Camellia}; and the last 2 rows give 
+C3 = {Perilla oil, Linseed oil}.
+A single-linkage dendrogram, 
+cut at the appropriate level, gives the two clusters 
+corresponding, respectively, to the first two rows and the last 
+6 rows of the ODI in Fig.
+12.
+Fig.
+12.
+Random and ordered dissimilarity images for the Fat-Oil data [16].
+The next examples hint at the potential of VAT to extract 
+some useful information about the geometry of object data 
+clusters underlying the corresponding relational data.
+In Figs.
+13-14, we show the results of applying VAT to linear and 
+concentric circles grids of 128 data points, respectively.
+The  
+data set underlying the three views in Fig.
+13 consists of 8 
+rows of closely spaced points, 16 points per row.
+The upper 
+view in Fig.
+
+---
+
+13 consists of 8 
+rows of closely spaced points, 16 points per row.
+The upper 
+view in Fig.
+13 shows the image corresponding to a display 
+of the unordered distances, with the initial point again being 
+indicated by the dark circle (point number 3, left to right, 
+uppermost row).
+The middle view in Fig.
+13 is the ODI made 
+by VAT, with the initial point being the first point 
+(uppermost left) in the data.
+Here you can see that the data 
+are traversed in a fully ordered walk of minimum distance.
+The bottom view in Fig.
+13 illustrates the “zigzagging” effect 
+that can result if the initialization for reordering made at Step 
+2 of our VAT algorithm is ignored.
+In this view, we chose a 
+random initial vertex (the fifth point from the right in row 5 
+of the data).
+The resultant ODI still has the cyclic structure 
+evident in the middle view, but there is also a c = 2 block 
+structure superposed on it which confuses the viewer, and 
+obscures possible interpretations of tendencies in the data.
+VAT
+
+ 
+
+ 
+
+ 
+
+Fig.
+13.
+Random and ordered dissimilarity images for linear data.
+The data for Fig.
+14 are drawn uniformly from a pair of 
+concentric circles.
+
+---
+
+The data for Fig.
+14 are drawn uniformly from a pair of 
+concentric circles.
+This type of data set occurs often in real 
+images, and has long posed a challenge for researchers in 
+clustering.
+An interesting question that naturally arises after 
+examining Figs.
+13-14 is whether or not it is possible to 
+correctly interpret the geometric alignment of object data 
+based on ordered dissimilarity images.
+We believe that this 
+can be done somewhat.
+For example, the ODI’s in these 
+figures indicate that both object data sets are arranged in a 
+very regular fashion.
+In the ODI of Fig.
+13, we can conclude 
+the periodic nature of the object data arrangement because of 
+the cycling from dark to light to dark, etc., as we go from left 
+to right across a particular line of the image.
+Moreover, you 
+can count 8 diagonal blocks, so it is reasonable to conjecture 
+that the underlying data fall into 8 very regular clusters 
+(which they do).
+We can also infer that the data set corresponding to the 
+ODI in Fig.
+14 consists of 2 similar, regular structures, based 
+on the 2 × 2 block form of the ODI image.
+
+---
+
+We can also infer that the data set corresponding to the 
+ODI in Fig.
+14 consists of 2 similar, regular structures, based 
+on the 2 × 2 block form of the ODI image.
+Further 
+examination of each diagonal block shows (by scanning a 
+line in the block from left to right) that the objects are 
+arranged in some type of loop, as the distances go through 
+one cycle of varying levels of nearness.
+Of course, real data 
+
+ 
+
+    
+
+VAT
+
+ 
+
+ 
+Fig.
+14.
+Random and ordered dissimilarity images for circular data.
+V. 
+CONCLUSIONS 
+
+We gave a new approach for visually assessing cluster 
+tendency using ordered dissimilarity images.
+The proposed 
+ordering algorithm is related to Prim’s algorithm for finding 
+the minimal spanning tree of a weighted graph.
+The 
+approach is able to signal the presence of well separated 
+clusters via the manifestation of dark blocks of pixels on the 
+main diagonal of the ODI.
+This technique is applicable to all 
+dimensions and all numerical data types, complete or 
+incomplete.
+Several 2 dimensional examples suggest that 
+ODI’s may help us “see” geometric properties of underlying 
+object data sets.
+An implementational issue is worth mentioning here.
+
+---
+
+Several 2 dimensional examples suggest that 
+ODI’s may help us “see” geometric properties of underlying 
+object data sets.
+An implementational issue is worth mentioning here.
+In 
+order to get results like ours in Figs.
+12 and 13, the tie 
+breaking strategies implicit in VAT should favor additions of 
+new points that are of minimal distance to the most recently 
+added points.
+We illustrate this with an example.
+Suppose 
+we have determined xk1, xk2, and xk3 and that the minimum 
+distance between any of our determined points and the others 
+is , say 5.
+If xi and xj are 2 of the other points such that xi is 
+distance 5 from xk1 and xj is distance 5 from xk3, then the 
+suggested tie-breaking strategy takes xk4 = xj.
+Additionally, 
+precautions 
+must 
+be 
+taken 
+against 
+roundoff 
+error 
+inadvertently causing two mathematically equal distances to 
+be computed non-equally in order to replicate our results in 
+the special cases of Figs.
+12 and 13.
+We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract 
+information about the geometric structure of possible clusters.
+Questions of interest include finding alternative, superior 
+
+ [1] A.K.
+
+---
+
+We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract 
+information about the geometric structure of possible clusters.
+Questions of interest include finding alternative, superior 
+
+ [1] A.K.
+Jain and R.C.
+Dubes, Algorithms for Clustering 
+Data.
+Englewood Cliffs, NJ: Prentice-Hall, 1988.
+[2] B.S.
+Everitt,  Graphical Techniques for Multivariate 
+Data.
+New York, NY: North Holland, 1978.
+[3] J.W.
+Tukey,  Exploratory Data Analysis.
+Reading, MA: 
+Addison-Wesley, 1977.
+[4] W.S.
+Cleveland,  Visualizing Data.
+Summit, NJ: Hobart 
+Press, 1993.
+[5] M. Kendall and J.D.
+Gibbons,  Rank Correlation 
+Methods.
+New York, NY: Oxford University Press,
+
+---
+
+1987. 
+ [7] A.P. 
+Dempster, 
+N.M. 
+Laird 
+and 
+D.B.
+Rubin,  
+“Maximum-likelihood from incomplete data via the EM 
+algorithm,” in Journal of the Royal Statistical Society, 
+vol.
+B39, pp.
+1-38, 1977.
+[8] J.K. Dixon,  “Pattern recognition with partly missing 
+data,” in IEEE Transactions on Systems, Man and 
+Cybernetics, vol.
+9, pp.
+617-621, 1979.
+[9] R.J. Hathaway and J.C. Bezdek, “Clustering incomplete 
+relational data using the non-Euclidean relational fuzzy 
+c-means algorithm,” unpublished.
+[10] R.J.A.
+Little and D.B.
+Rubin,  Statistical Analysis with 
+Missing Data.
+New York, NY: Wiley, 1987.
+[11] J.L.
+Schafer,  Analysis of Incomplete Multivariate Data.
+London: Chapman & Hall, 1997.
+[12] K.H.
+Rosen,  Discrete Mathematics and Its Applications.
+New York, NY: McGraw-Hill, 1999.
+[13] R.F.
+Ling,  “A computer generated aid for cluster 
+analysis,” in Communications of the ACM, vol.
+16, 355361, 1973.
+[14] J.C. Bezdek and N.K.
+Pal,  “Some new indexes of cluster 
+validity,” in IEEE Transactions on Systems, Man and 
+Cybernetics-Part B, vol.
+28, pp.
+301-315, 1998.
+[15] J.C. Bezdek, J.M.
+Keller, R. Krishnapuram, L.I.
+Kuncheva and N.R.

@@ -1,0 +1,1386 @@
+FairUDT: Fairness-aware Uplift Decision Trees ⋆
+Anam Zahid1, Abdur Rehman Ali1, Shaina Raza2,∗, Rai Shahnawaz1, Faisal
+Kamiran1, Asim Karim3
+Training data used for developing machine learning classifiers can exhibit bi-
+ases against specific protected attributes. Such biases typically originate from
+historical discrimination or certain underlying patterns that disproportionately
+under-represent minority groups, such as those identified by their gender, reli-
+gion, or race. In this paper, we propose a novel approach, FairUDT, a fairness-
+aware Uplift-based Decision Tree for discrimination identification.
+FairUDT
+demonstrates how the integration of uplift modeling with decision trees can be
+adapted to include fair splitting criteria. Additionally, we introduce a modified
+leaf relabeling approach for removing discrimination. We divide our dataset
+into favored and deprived groups based on a binary sensitive attribute, with
+the favored dataset serving as the treatment group and the deprived dataset
+as the control group. By applying FairUDT and our leaf relabeling approach
+and can be utilized in discrimination detection tasks.
+Keywords:
+Modeling
+1. Introduction
+Discrimination represents the unfair treatment of individuals based on their
+association with specific groups, influenced by characteristics like nationality,
+sex, age, and race. Globally, laws exist to combat such discrimination in various
+⋆Published version of the article is available at: https://doi.org/10.1016/j.knosys.2025.113068.
+(https://www.sciencedirect.com/science/article/pii/S0950705125001157)
+∗This is to indicate the corresponding author.
+Email addresses: anam.zahid@itu.edu.pk (Anam Zahid), abdurrehman.ali@itu.edu.pk
+(Abdur Rehman Ali), shaina.raza@torontomu.ca (Shaina Raza), raishahnawaz8@gmail.com
+(Rai Shahnawaz), faisal.kamiran@itu.edu.pk (Faisal Kamiran), akarim@lums.edu.pk
+(Asim Karim)
+1Information Technology University of the Punjab (ITU), Lahore, Pakistan
+2Vector Institute, Toronto Metropolitan University, Toronto, Ontario, Canada
+3Lahore University of Management Sciences (LUMS), Lahore, Pakistan
+Article accepted to Knowledge-Based Systems (2025)
+arXiv:2502.01188v1 [cs.LG] 3 Feb 2025
+
+sectors, including employment, education, and housing [1, 2]. However, ma-
+chine learning (ML) classifiers, often trained on historical data, may perpetuate
+existing biases if the data itself is biased .
+To mitigate this, algorithmic bias countermeasures can be classified into
+pre-processing, in-processing, and post-processing categories.
+Pre-processing
+methods modify the datasets to eliminate bias [4–7]. In contrast, in-processing
+techniques adjust the model’s learning mechanisms [8–11], and post-processing
+methods focus on altering the predictions [12–14].
+Traditional classifiers like naïve bayes and logistic regression predict proba-
+bilities based on attributes, while uplift modeling (a specialized area of predictive
+analytics) aims to measure the impact of interventions on treatment vs control
+groups . Specifically, we could define the treatment group as those subjected
+to an action or intervention (e.g., favoritism), while the control group remains
+deprived of this phenomenon. This method is particularly effective for identi-
+fying discrimination by comparing the probability differences between favored
+and deprived groups, which helps in pinpointing instances of undue favoritism
+or deprivation.
+Building on these concepts, we introduce FairUDT (Fairness-aware Uplift
+Decision Trees) , a novel decision tree model designed to identify and address
+biases in decision-making processes. To our knowledge, FairUDT is the first
+method that employs uplift modeling for this purpose. Our approach modifies
+decision trees by incorporating a unique leaf relabeling criterion that targets
+only discriminatory instances instead of entire groups, enhancing fairness while
+maintaining accuracy.
+1.1. Research Objectives:
+The objectives of this study are:
+• To explore the use of uplift modeling within decision trees as a method
+for identifying and addressing biases against marginalized groups.
+• To develop and evaluate FairUDT, a novel approach that combines uplift
+modeling and decision trees for reducing bias, with broad applicability
+across various machine learning contexts.
+• To propose new fairness-aware decision tree construction techniques, in-
+cluding different criteria for splitting nodes and a refined leaf relabeling
+approach.
+• To study the interpretability of FairUDT, ensuring it remains a transpar-
+ent and user-friendly tool for bias detection and mitigation.
+• To assess the effectiveness and transparency of FairUDT through compara-
+tive analysis with existing methods, using a range of fairness and accuracy
+metrics.
+
+1.2. Our Contributions:
+The main contributions of this work are summarized as follows:
+• We pioneer the application of uplift modeling to discrimination identifica-
+tion, providing a novel analytical framework for fair machine learning.
+• We propose FairUDT, an uplift modeling based technique for fairness-
+aware decision tree construction and, a selective leaf relabeling approach.
+This methodology enables precise discrimination removal by targeting only
+those subgroups exceeding specific discrimination thresholds, rather than
+entire leaves.
+• Our model is rigorously tested on three benchmark datasets—Adult ,
+COMPAS , and German Credit —showing robust performance
+across all, with superior results on COMPAS and German Credit datasets.
+This demonstrates our method’s effectiveness and generalizability, com-
+pared with existing dataset-specific techniques.
+• The proposed model enhances interpretability, allowing stakeholders to
+easily understand and address potential subgroup discriminations within
+decision-making processes. We make the method and code 4 available for
+the reproducibility of research.
+2. Related work
+This section discusses the most recent research in algorithmic discrimination,
+as well as the application of decision trees in uplift modeling. It also highlights
+how our proposed work connects these two domains.
+Algorithmic discrimination :
+Traditional pre-processing based tech-
+niques aim to produce “balanced” datasets that can be fed into any machine
+learning model. These techniques can be categorized as relabelling, resampling,
+and data transformation techniques. In relabelling, only the target values of a
+few training samples are changed [4, 19]. Resampling involves duplicating or
+dropping specific samples, or assigning weights, as in the reweighing method
+proposed by Kamiran and Calders . Data transformation techniques ma-
+nipulate the training features and their labels to generate new training sets.
+Calmon et al. propose an ‘optimized pre-processing algorithm’ to minimize
+discrimination while controlling the distortion and utility in the resulting trans-
+formed data. However, the optimization programs can be computationally very
+expensive to solve. Disparate impact remover is another data transforma-
+tion technique, focused on satisfying the disparate impact fairness criteria, also
+known as the 80% rule .
+It applies a repair procedure that removes the
+relationships between protected attribute and other input features. Recently,
+4https://github.com/ara-25/FairUDT
+
+pre-processing approaches based on adversarial learning have also been devel-
+oped . However, these techniques are complex, require more computation
+power, and are difficult to interpret in terms of the resulting representations.
+In contrast, our proposed approach is focused on identification and relabeling
+and is thus more intuitive.
+In the domain of discrimination aware data mining, many in-processing ap-
+proaches are also proposed for bias mitigation. A recent study analyzed fairness
+in in-processing algorithms and divided these mitigation approaches into
+two categories: explicit and implicit mitigation methods. Explicit mitigation
+refers to modification of the objective function by either adding a regulariza-
+tion term [10, 22, 23] or by constraint optimization [24–27]. Implicit methods
+aim to improve latent representations by learning adversarial [28, 29], disen-
+tangled [30, 31] and contrastive [32, 33] representations. Discrimination aware
+post-processing techniques, on the other hand, modify the output of a standard
+learning algorithm by using some non-discriminatory constraints [12–14, 34].
+Discrimination-aware decision trees: Decision trees are a widely used
+supervised machine learning algorithm for classification and regression tasks.
+They have a hierarchical structure with branches, nodes, and leaves. The al-
+gorithm splits the dataset at each internal node based on decision rules from
+data attributes, leading to leaf nodes with the final classification or regression
+outcomes.
+In traditional decision trees, each split aims to maximize information gain,
+resulting in branches with more homogeneous subsets of data, thereby improv-
+ing prediction accuracy. However, in discrimination-aware decision trees, the
+objective is to balance accuracy with fairness. This involves a multi-objective
+sitive groups.
+The concept was first introduced by Kamiran et al. , who
+modified the splitting criteria and applied a leaf relabeling approach to achieve
+non-discriminatory outcomes. Recent approaches in constructing discrimination
+aware decision trees are more focused on modifying existing splitting criterion
+to account for fairness besides maximizing predictive performances. For exam-
+ple, Raff et al. uses the difference method, originally proposed by , to
+calculate information gain in CART decision Trees. Similarly, work by Aghaei
+et al. added fairness constraints to the loss function of CART trees using
+Mixed-Integer Programming (MIP) model. The work of involves optimizing
+multiple objective functions of decision trees using genetic algorithms. Work by
+ propose modified hoeffding trees for maintaining fairness in streaming data.
+A more recent study introduced FFTree , an in-processing algorithm that
+uses decision trees to select multiple fairness criteria and sensitive attributes
+at each split.
+The goal of FFTree is to select best split where information
+gain is optimal with respect to both fairness criteria and sensitive attributes.
+However, because of their flexibility in picking multiple fairness criteria and
+sensitive features, FFTree may suffer greater losses in accuracy than typical
+discrimination-aware decision trees.
+Uplift modeling : Most work in the domain of machine learning and
+
+Causal Inference (CI) has been focused on structural causal modeling i.e. learn-
+ing causal graphs and counterfactuals. Another goal of CI is to measure the
+effect of potential cause (e.g. event, policy, treatment) on some outcome. Uplift
+modeling is associated with this potential outcomes framework of CI model-
+ing. The major focus of uplift modeling is to measure the effect of an action
+or a treatment (e.g.
+marketing campaign) on customer outcome .
+The
+term “uplift” specifically refers to estimating the differences between the buying
+behavior of customers given the promotion (treatment) and those without it
+(control) . Current uplift modeling techniques can be distributed in three
+categories: tree based uplift models and its ensembles, SVM based models and
+generative deep learning methods. While generative deep learning models are
+more recently introduced, we will continue our discussion on tree based uplift
+models since they are the main focus of our approach. Most of the existing tree
+based uplift modeling strategies used modified splitting criteria for measuring
+treatment effect . For example, uplift incremental value modeling and
+uplift t-statistics tree tends to maximize the splitting criteria by measur-
+ing conditional average treatment effect between left and right child node of a
+tree. However, work by Rzepakowski and Jaroszewicz tries to maximize the
+difference of average outcome between control and treatment groups within a
+single decision tree node.
+To the best of our knowledge, FairUDT is the first paper to study uplift
+modeling in terms of discrimination identification. A similar approach in the
+literature is proposed , where causal trees are used for the discovery of
+discriminatory subgroups and the tree splitting criteria is based on measuring
+Heterogeneous Treatment Effect (HTE). A limitation of using causal trees is
+that it requires consistency estimates i.e. balanced number of favored and de-
+prived individuals in the leaf nodes . This is practically impossible in bias
+quantification since deprived individuals are present in minorities mostly. Our
+approach, on contrary, deals with measuring differences in probability distri-
+bution between favored and deprived groups and does not require any such
+assumption.
+Discrimination identification using uplift modeling : Discrimination
+can be defined as the class probabilities difference among favored and deprived
+distributions for the groups exhibiting the same characteristics or features. This
+notion of discrimination identification is aligned with the idea of uplift modeling
+where incremental impact for treatment group was differentiated from control
+group . In a marketing campaign, given a treatment and control set of users,
+uplift is measured as the difference between response rates for the two sets.
+Making use of the same analogy for a conventional discriminatory setting, the
+disparate impact between the favored and deprived groups can be measured
+by considering the difference between the acceptance and rejection rates among
+two groups. For example, given similar qualifications among members of both
+groups applying for the same job, how much is one group preferred over other.
+pretability is defined as the ability to explain models and their outputs in a
+manner that is comprehensible to humans. However, quantitative notions of
+
+interpretability are largely absent from the machine learning literature, compli-
+cating the comparison of models without human intervention . One such
+measure is sparsity, which refers to the simplicity of models within the same
+class. In the context of decision trees, Rudin et al. defines sparsity as the
+number of leaves in the tree, where trees with fewer leaves are considered sparser
+and therefore, more desirable. Another important measure is simulatability ,
+i.e. the ease of the humans to interpret part or all of the model decisions. Shal-
+by these trees are easily understandable by humans. Some studies [47, 48] sug-
+gested that the depth of the decision tree can also be taken as a complexity
+indicator, where more depth means more complex model.
+3. FairUDT - Fairness-aware Uplift Decision Trees
+In this study, we propose FairUDT, a novel decision tree model designed to
+identify and address biases in decision-making processes. FairUDT employs an
+uplift-induced splitting criterion that quantifies the class probabilities difference
+between favored and deprived groups at each node of the tree. This criterion
+helps to detect discriminatory patterns, referred to as uplifts, in the model’s
+predictions.
+The tree is systematically developed until all leaves display maximal prob-
+abilistic differences, signifying potential uplifts (or biases). To mitigate these
+biases, we introduce a fairness-oriented intervention through a leaf relabeling
+technique. This approach adjusts the labels of data points within biased sub-
+ment across groups.
+The end-to-end pipeline of our proposed fairness-aware
+3.1. Model Construction
+The construction of FairUDT is different from traditional decision tree mod-
+els by utilizing dual datasets that represent both favored and deprived groups.
+These groups are defined based on a sensitive attribute, allowing the tree to
+simultaneously evaluate and adjust for biases during its construction. This sec-
+tion delineates various splitting criteria implemented to enhance fairness in the
+decision-making process. Further details on the methodologies for identifying
+biased sectors and the specific leaf relabeling techniques used to treat these bi-
+ases are discussed in Section 4. This approach ensures that FairUDT not only
+identifies but also rectifies biases, promoting fairness in predictive modeling.
+3.2. Notations and Definitions
+Given a dataset (X, S, Y ), with N records, where X represents non-sensitive
+attributes and S = {SF , SD} is a binary sensitive attribute like gender or race.
+The dataset is split into favored (X, SF , Y ) and deprived (X, SD, Y ) groups, con-
+taining N F and N D records, respectively. The outcome Y is binary {Y +, Y −}.
+
+Notation
+Description
+X
+Non-sensitive attributes
+S
+Binary sensitive attribute {SF , SD} such as gender or race
+Y
+Binary outcome variable {Y +, Y −}
+N
+Total number of records in the dataset
+N F
+Number of records in the favored group
+N D
+Number of records in the deprived group
+P F , P D
+Probabilities for the favored and deprived groups
+P F (Y ), P D(Y )
+Probabilities of the outcome Y within the favored/deprived groups
+A
+Categorical attribute with outcomes a
+For categorical attributes, we perform a split test A with outcomes a ∈
+A, where numerical attributes are discretized.
+Conditional probabilities are
+calculated as P F (Y |a) and P D(Y |a) for each outcome A = a in the favored and
+deprived groups. A summary of the notations used in this paper is given in
+We define Demographic Parity (DP) as equal probability of a positive out-
+come across groups:
+DP = |P( ˆY = Y +|S = SF ) −P( ˆY = Y +|S = SD)|
+A value of 0 indicates perfect parity.
+We define the Average Odds Difference (AOD) as fairness metrics as the
+mean of the differences in True Positive Rates (TPR) and False Positive Rates
+(FPR) between groups:
+AOD = [TPRS=SF −TPRS=SD] + [FPRS=SF −FPRS=SD]
+An AOD of 0 signifies no disparity in odds.
+We also employ Balanced Accuracy (BA) to evaluate classifier performance,
+calculated as the average of TPR and True Negative Rate (TNR):
+BA = TPR + TNR
+The details are given in Appendix A
+3.3. Uplift modeling based splitting criteria
+Classical splitting criteria for decision tree construction focus on modeling
+class probabilities to ensure accurate predictions. However, fairness in decision-
+making represents a Pareto optimization problem, requiring decisions to be both
+accurate and fair.
+In standard decision tree construction, an attribute test yielding the max-
+imum information gain for class (IGC) is selected for the split. In the sem-
+inal work of , multiple splitting criteria were designed to minimize bias in
+
+decision-making. Alongside IGC, the information gain with respect to the sen-
+sitive attribute (IGS) is also calculated for the split tests. The intuition behind
+this approach was to decide splits based on the maximum difference between
+IGC and IGS (i.e., IGC-IGS), aiming to produce leaves that are homogeneous
+with respect to the class label and heterogeneous with respect to the sensitive
+attribute. However, this approach and the IGC/IGS ratio did not demonstrate
+significant improvements in reducing discrimination. Another proposed crite-
+rion, (IGC+IGS), aimed at achieving homogeneity with respect to both class
+and sensitive attributes, yet it often lacked variation in the sensitive attribute
+to effectively adjust for fairness. Nevertheless, as results for such splits, when
+combined with a leaf relabeling technique, were better, it was adopted.
+In contrast, the splitting criteria of FairUDT model the difference in class
+probabilities between favored and deprived groups instead of modeling the actual
+class probabilities, with the aim of identifying subgroups at leaves that maximize
+uplift, or in our case, discrimination. As a result, biased sectors are identified
+among the tree leaves and can be addressed for fairness later. This approach
+is also conventional to decision tree construction as it models the amount of
+information a test provides about this difference. Given the goal to optimize
+the probabilistic differences between favored and deprived groups, our splitting
+criterion is logically based on distribution divergence.
+Following the work of , we use two different distribution divergence mea-
+sures: Kullback-Leibler divergence (KL) and squared Euclidean distance. KL-
+divergence is a widely recognized information-theoretic measure. Although
+Euclidean distance is less commonly applied for comparing probability distri-
+butions, it is referenced in the literature . Given two separate probability
+distributions Q = (q1, q2, . . . , qn) and P = (p1, p2, . . . , pn), the divergences are
+defined as follows:
+KL(P : Q) =
+n
+X
+i=1
+pi log pi
+qi
+E(P : Q) =
+n
+X
+i=1
+(pi −qi)2
+For a given split test A, the gain or increase in divergence for any divergence
+measure D would be the difference between divergence values after and before
+the split:
+Dgain(A) = D(P F (Y ) : P D(Y )|A) −D(P F (Y ) : P D(Y ))
+The first part of the equation denotes the conditional divergence among fa-
+vored and deprived distributions after performing a split test on an attribute A,
+whereas the second part measures divergence prior to the split. Dgain quantifies
+the overall change in divergence resulting from the split on test A. A positive
+gain signifies that the split has increased the divergence between favored and
+deprived groups. Conversely, a negative gain indicates that the split on A has
+
+decreased the divergence, suggesting that A is a less significant candidate for
+tree construction.
+Conditional divergences, used multiple times in the literature [51, 52], are
+adapted for our setting as defined by , taking into account two probability
+distributions separately (i.e., favored and deprived in our case).
+D(P F (Y ) : P D(Y )|A) =
+X
+a
+N(a)
+N
+D(P F (Y |a) : P D(Y |a))
+Here, P
+a sums over all outcomes of test A, weighting each specific test
+value by the fraction of instances for that respective test outcome, analogous to
+definitions of gini and entropy measures.
+3.3.1. Kullback-Leibler divergence
+Kullback-Leibler divergence is a directed divergence which measures an asym-
+metric distance between two probability distributions. Kullback preferred the
+term "discrimination information" .
+The asymmetry of KL-divergence is
+not problematic in our context, as the deprived group serves as an inherent
+reference point from which the favored group is expected to diverge due to its
+preferential treatment. In fact, our experiments confirm that KL-divergence is
+a more appropriate measure for our scenario, as it is sensitive to distributional
+differences and effectively captures the directional information of divergence.
+Mathematically, gain in discrimination for a split test is computed by substitut-
+ing conditional divergence Equation (3.4) in Equation (3.3), replacing D with
+KL and finally substituting KL value from Equation (3.1).
+KLgain(A) =
+X
+a
+
+N(a)
+N
+X
+y
+fy(a) log fy(a)
+dy(a)
+X
+y
+fy log fy
+dy
+Here, y denotes a particular class label, P
+y is the sum over all class la-
+bels, and fy and dy depict the probability of y in the favored and deprived
+distributions, respectively. Similarly, fy(a) and dy(a) denote the corresponding
+probabilities for a certain test outcome a. We used Laplace correction through-
+out while estimating the probabilities P F and P D because the KL value will
+tend to infinity if, for any test outcome, dy(a) is zero and the corresponding
+fy(a) is non-zero. We establish some facts through propositions which KLgain
+should satisfy (see Appendix B).
+KLgain Ratio. Standard decision tree learners address the bias of information
+gain on high-branching attributes using the split information for the test. In our
+case, at first, the split information for favored and deprived groups can differ.
+Additionally, we need to account for uneven splits between favored and deprived
+distributions to ensure randomness and avoid problems with probability estima-
+tion. In an extreme case, a test can split the favored and deprived groups into
+different subtrees, making it difficult to detect discrimination. As a result, the
+
+subsequent tree construction for either the favored or deprived group will rely
+on conventional entropy gain. Hence, the suggested normalization value for the
+KLgain test is as follows: (Recall N = N F + N D denotes the total number of
+records for favored and deprived datasets.)
+IKL(A) = H
+N F
+N , N D
+N
+KL(P F (A) : P D(A))
++N F
+N H(P F (A)) + N D
+N H(P D(A))
+The first term of the equation punishes the tests that split the favored and
+deprived groups into different proportions.
+The imbalance between propor-
+tions is calculated using the divergence between two distributions, which can
+be arbitrarily close to infinity. However, it makes no sense to penalize on this
+account when there is not sufficient data available for favored and deprived
+groups. Therefore, the divergence part is multiplied by the entropy function
+H
+NF
+N , ND
+N
+, which approaches zero for massive disproportion between the
+number of data records for the involved groups. The second and third terms of
+the equation add split information for favored and deprived groups as a fraction
+of their records involved, hence penalizing tests with a large number of outcomes.
+One more concern is that very small values of the normalizing factor can inflate
+the value of tests with even low KLgain. To resolve this, a test is selected only
+if it has a greater or equal value to the average gain of all attributes. The final
+splitting criterion would be the fraction of Equation (3.5) and Equation (3.6).
+KLgainRatio = KLgain
+IKL(A)
+3.3.2. Squared Euclidean Distance
+Euclidean distance was considered because of its certain advantages over
+KL-divergence as a distance measure. Unlike KL, it is symmetric, which has
+benefits in tree learning when the favored group is missing.
+Moreover, it is
+avoid infinitely large uncertain values that may lead to the wrong selection of a
+test attribute. Euclidean divergence gain for a test over distributions P F and
+P D is defined as follows:
+Egain(A) =
+X
+a
+
+N(a)
+N
+X
+y
+(fy(a) −dy(a))2
+X
+y
+(fy −dy)2
+The notation description is analogous to that defined for KLgain in Equa-
+tion (3.5). Few claims for Egain(A) vital to our context are also discussed (see
+Appendix C).
+
+Egain Ratio. The explanation for the suggested normalization value for the
+Egain test is analogous to that used for KLgain in Equation (3.6). The only
+exception is the use of the Gini calculation instead of entropy for all the terms
+involved to ensure symmetry.
+The first term of the equation penalizes tests that create disproportionate
+splits between favored and deprived groups, measured by squared euclidean di-
+vergence. However, this penalty is adjusted by the function GINI
+NF
+N , N D
+N
+which approaches zero when there is a significant disparity in data records be-
+tween the groups. The second and third terms incorporate split information for
+both groups based on the fraction of records involved, penalizing tests with many
+outcomes. This is done using the sum of Gini indices for the test’s outcomes,
+weighted by the total number of records in each group.
+IE(A) = GINI
+N F
+N , N D
+N
+E(P F (A) : P D(A))
++N F
+N GINI(P F (A)) + N D
+N GINI(P D(A))
+The final splitting criterion would be formulated as follows:
+EgainRatio = Egain
+IE(A)
+3.4. Discriminatory Regions and Tree Implications
+Subsequent to FairUDT construction, discrimination can arise at a certain
+leaf l ∈L if the probability of the positive class for the favored subgroup is higher
+than the probability for the deprived subgroup, i.e., P F (y+|l) > P D(y+|l) (sim-
+ilarly, the probability of the negative class in the deprived subgroup is greater
+than the probability in the favored subgroup, i.e., P D(y−|l) > P F (y−|l)). Since
+FairUDT is built using probability divergence measures, the resulting leaves can
+contain discrimination information for subgroups, making it readily available for
+mitigation. Formally, the overall discrimination at a certain leaf discl can be
+calculated as the sum of discrimination values for the positive and negative
+classes:
+discl = (P F (y+|l) −P D(y+|l)) + (P D(y−|l) −P F (y−|l))
+Definition 1: A leaf l is said to be a discriminatory region if discl > 0.
+After identifying the discriminatory regions, leaf relabeling is applied either
+by demoting the favored individuals or by promoting the deprived individuals,
+and the resultant decision tree can be adapted as a data pre-processor. Fur-
+thermore, a tunable parameter σt is adjusted to select leaves for relabeling.
+Definition 2: A leaf l can only be relabeled if discl > σt.
+The selection of the tunable parameter σt depends on business needs, as
+there is no single standard for allowable fairness in the industry.
+Moreover,
+
+tuning σt to achieve a completely fair dataset may result in poor performance,
+i.e., a tradeoff between fairness and performance . Hence, a domain expert
+is required to determine the optimal value of σt that minimizes loss of accuracy.
+In our settings, the value of σt ranges from 0 to 2. A value of σt = 0 indicates
+that all instances in the leaf must be relabeled.
+4. Leaf Relabeling
+Contrary to the definition in Equation (3.11), the work by defined discrim-
+ination separately for positively and negatively labeled leaves, which is simply
+the difference in fractions of records between favored and deprived subgroups at
+a certain leaf. Hence, for leaves with a positive majority class, discrimination
+was quantified as P F (Y |l) −P D(Y |l), whereas leaves with a negative majority
+class had a discrimination value equal to P D(Y |l)−P F (Y |l). However, this for-
+mulation of discrimination is applicable only in reference to the majority class.
+In general, it is terribly faulty on multiple accounts. Consider a leaf having sim-
+ilar proportions of favored and deprived instances, but with favored instances
+having positive and deprived instances having negative actual class labels. This
+should be considered a highly discriminatory region since, in a leaf exhibiting
+similar features, the class probabilities differences (i.e., both acceptance and re-
+jection rates differences) are maximal between favored and deprived subgroups.
+Entirely opposed to that, the discrimination value would be zero as per their
+definition. Thus, the settled concept for quantifying discrimination at leaves is
+strictly contextual.
+In preference to the previous approach, our proposed leaf relabeling ap-
+proach is based on demoting the unnecessarily favored individuals or promoting
+the unjustifiably deprived individuals. Intuitively, if the majority of a subgroup
+is accepted, then lower acceptance and higher rejection rates for the deprived
+demographic within that subgroup are unjustified. Similarly, if the majority
+of a subgroup is rejected, then lower rejection and higher acceptance rates for
+the favored group within this division also indicate disparity. Henceforth, we
+have devised a strategy to remove disparate impact by relabeling randomly
+selected individual records at a certain discriminatory leaf l such that the dis-
+crimination defined by Equation (3.11) becomes 0, i.e., the equality conditions
+
+P F (y+|l) = P D(y+|l) and P F (y−|l) = P D(y−|l) are satisfied. This is done by
+promoting or demoting individual records at that leaf to the majority class.
+–Promotions: If the dominant class at a discriminatory leaf is positive, then
+random deprived individuals at that leaf with a negative class are promoted in
+the dataset.
+–Demotions: If the majority class at a discriminatory leaf is negative, then
+random favored individuals at that leaf are demoted in the dataset. For equal
+proportions, promotions to the positive class are preferred. The complete pro-
+cedure to generate the relabeled dataset (X, S, ˜Y ) is shown in Algorithm 1.
+In contrast to most previous works on pre-processing [5, 54, 55], our re-
+labeling approach incentivizes utility preservation by promoting or demoting
+individuals to the majority class.
+The end-to-end pipeline of our proposed fairness-aware approach, FairUDT
+The favored and deprived groups
+from the raw data (X, S, Y ) are first utilized in building FairUDT. After the
+construction of the tree, the biased subgroups are identified among the leaves
+L of the tree, where the discrimination discl in each leaf l is quantified by
+Equation (3.11). Once a tree is built, all leaves having discrimination greater
+than σt are relabeled. Finally, the pre-processed data (X, S, ˜Y ) is used to train
+a classification algorithm. It is important to note that the test data must also
+be pre-processed before making predictions with the classifier.
+5. Experimental Setup
+5.1. Datasets
+We evaluated our approach on three real-world datasets, utilizing FairUDT
+as the data pre-processor. The summary statistics of these datasets are given in
+annual income of a person is greater than 50k dollar or not. The second dataset,
+ProPublica COMPAS dataset evaluates whether or not an individual will
+be arrested again within two years of its release. The individual’s race is used as
+the sensitive attribute and has been binarized to caucasian and non-caucasian
+categories. The UCI German Credit dataset predicts if an individual has
+good or bad credit risk.
+5.2. Hyperparameters and Settings
+For the evaluation of the proposed uplift-based discrimination-aware deci-
+sion tree FairUDT, we used all the relevant dataset attributes during the pre-
+processing and classification phases. Using a larger group of features with more
+categories per feature incentivizes the discovery of fine-grained subgroups. Fur-
+thermore, the numerical features were quantized to categorical ranges.
+We did not implement any early stopping methodology; thus, FairUDT was
+extended to its maximum depth to capture highly biased instances at the tree
+leaves. We conducted experiments using both the KLgain and Egain ratio split-
+ting criteria for the construction of FairUDT.
+
+Algorithm 1: Leaf relabeling
+Input
+: Original data (X, S, Y ), the discriminatory subgroups on
+leaves L, data instances (Xl, Sl, Yl) for every leaf l ∈L, and
+discrimination threshold σt ∈[0, 2]
+Output: Pre-processed data (X, S, ˜Y )
+1 Initialize ˜Y ←Y
+2 foreach {l ∈L} do
+Compute disc(l) as in Eq. (3.11)
+Compute class(l) := mode(Yl) /* Find majority class in the
+subgroup l
+5 end
+6 foreach {l ∈L|disc(l) ≥σt} do
+if class(l) = y+ then Promote( ˜Y , l);
+else Demote ( ˜Y , l);
+9 end
+10 return ˜Y
+11 Function Promote( ˜Y , l):
+/* select deprived negative instances from leaf l which
+will be relabeled
+Initialize R ←˜Y [h] where h = {e|(e ∈Yl) ∧(Sl = sD) ∧(Yl = y−)}
+/* Find the number of deprived negative instances to
+relabel such that the equality conditions P(y+|sF ) =
+P(y+|sD) and P(y−|sF ) = P(y−|sD) are satisfied in this
+subgroup
+p = ⌊P(y+|sF )P(sD) −P(y+|sD)⌋
+Initialize T ←p random elements from R
+foreach t ∈T do
+t := y+ /* Relabel instance to the positive class
+end
+18 Function Demote( ˜Y , l):
+/* select favored positive instances from leaf l which
+will be relabeled
+Initialize R ←˜Y [h] where h = {e|(e ∈Yl) ∧(Sl = sF ) ∧(Yl = y+)}
+/* Find the number of favored positive instances to
+relabel such that the equality conditions P(y+|sF ) =
+P(y+|sD) and P(y−|sF ) = P(y−|sD) are satisfied in this
+subgroup
+p = ⌊P(y−|sD)P(sF ) −P(y−|sF )⌋
+Initialize T ←p random elements from R
+foreach t ∈T do
+t := y−/* Relabel instance to the negative class
+end
+
+Dataset
+N
+NF
+ND
+S = [ SF , SD]
+Attributes
+Adult
+gender = [male, female]
+COMPAS
+race =[caucasian, non-caucasian]
+German Credit
+age =[>25, <=25]
+Following the pre-processing of the original dataset, we employed it to fit Lo-
+gistic Regression (LR), Decision Tree (DT), and Support Vector Machine (SVM)
+classifiers without any hyperparameter tuning, utilizing a 75-25 train-test split.
+All classification experiments were performed using 10-fold cross-validation and
+the results are reported on both the original and relabeled test sets. Addition-
+ally, to compare our results with key related prior works, we utilized the pre-
+machine learning . We used the default hyperparameter values for the pre-
+viously proposed methods to ensure an unbiased comparison of results under
+consistent conditions.
+6. Results
+In this section, we first present the results of the comparative analysis of
+FairUDT with key related prior works on data pre-processing: optimized pre-
+processing , reweighing , and disparate impact remover algo-
+rithms (for details on these algorithms, see Section 2). The results, summarized
+Next, we evaluate the performance of FairUDT using the KLgain and Egain
+ratio splitting criteria. We also compare the results of FairUDT with the post-
+processing technique of discrimination-aware decision tree learning (DADT) pro-
+posed by .
+Additionally, we present a performance comparison of various
+classifiers when using FairUDT on the Adult dataset.
+As described in Section 3.2, we consider two metrics for measuring algorith-
+mic fairness in classification tasks: demographic parity (DP) and average
+odds difference (AOD). We also report balanced accuracy (BA) and ac-
+curacy (Acc) for measuring the predictive performance of the classifiers after
+applying FairUDT.
+6.1. FairUDT vs. Key Related Pre-processing Techniques
+processing techniques available in the existing literature and compare them with
+our best results, i.e., FairUDT with KLgain. The AOD, BA, and Acc metrics for
+our technique have been reported in two cases. In the first case, the test set was
+selected from the original data for evaluation, while in the second case, it was
+sampled from the relabeled dataset. The DP metric remains the same in both
+cases, as it is calculated solely based on the classifier’s predictions. Additionally,
+raw results were reported for each dataset to compare the performance of the
+
+the splitting criterion and LR as the classifier). Bold indicates the best result, while underline
+represents the second-best result
+Dataset
+Method
+DP ↓
+AOD ↓
+BA ↑
+Acc ↑
+Adult
+Raw
+Disparate Impact Remover
+Optimized Pre-processing
+Reweighing
+Proposed Approach
+FairUDT + Raw Test Set
+FairUDT + Relabelled Test Set
+COMPAS
+Raw
+Disparate Impact Remover
+Optimized Pre-processing
+Reweighing
+Proposed Approach
+FairUDT + Raw Test Set
+FairUDT + Relabelled Test Set
+German Credit Raw
+Disparate Impact Remover
+Optimized Pre-processing
+Reweighing
+Proposed Approach
+FairUDT + Raw Test Set
+FairUDT + Relabelled Test Set -0.03
+classifier (Logistic Regression, in this case) with and without applying data pre-
+processing techniques. The aim of this evaluation is to reduce discrimination
+For the Adult dataset, FairUDT achieves a perfect AOD of 0.00 on its re-
+labeled test set with a discrimination threshold of σt = 0.61.
+However, the
+Disparate Impact Remover performs better in terms of DP, with FairUDT com-
+ing in second. Similarly, for BA, the Disparate Impact Remover ranks highest,
+followed by Reweighing and FairUDT. Notably, in terms of accuracy, FairUDT
+with the relabeled test set outperforms all other methods and maintains the
+same accuracy as the raw dataset.
+FairUDT achieves state-of-the-art results for both DP and AOD on the
+COMPAS and German datasets.
+For COMPAS, with σt = 0.1, FairUDT
+reaches a DP of 0.00 on both the raw and relabeled test sets. In terms of AOD,
+FairUDT ranks highest and second-highest compared to previous pre-processing
+techniques. Although its performance in BA and accuracy is lower than that of
+the Disparate Impact Remover and Optimized Pre-processing, FairUDT over-
+all achieves better results compared to other methods, balancing accuracy and
+
+discrimination effectively. Specifically, for the German dataset with σt = 1.64,
+level while achieving higher performance in BA and accuracy. FairUDT, on the
+other hand, maintains the same balanced accuracy as the raw dataset (0.68)
+while achieving the lowest discrimination values (−0.03 DP, −0.01 AOD) on
+both the raw and relabeled test sets. Additionally, FairUDT improves the pre-
+diction accuracy of the raw German Credit dataset, increasing it by 1% on the
+relabeled test set (from 0.76 to 0.77).
+ure illustrates ROC curves for raw and pre-processed data, further divided into
+favored and deprived groups. Each curve is plotted for measuring the true pos-
+itive rate (recall) and false positive rate at different classification thresholds
+using the LR classifier. As discussed in previous studies, data pre-processing for
+discrimination removal decreases the classifier’s accuracy and hence, its AUC.
+AUC values compared to the raw datasets. However, the ratio between favored
+and deprived groups remains the same before and after pre-processing, result-
+ing in the same classification thresholds as the raw datasets. This shows that
+our pre-processing technique preserves the true positive rate and false positive
+rate of the original dataset and is hence independent of the classifier used for
+classification.
+DP, AOD, and BA metrics change with different values of the discrimination
+
+threshold σt across all three datasets using the LR classifier. Results of these
+metrics on the raw test sets are shown with a black dashed line on each corre-
+sponding plot. From the plots, it can be seen that the fairness metrics of DP and
+AOD can be successfully tuned using FairUDT. As shown, the optimal value of
+0.00 discrimination for these metrics can be achieved at certain thresholds of
+σt. For the Adult and COMPAS datasets, these metrics change gradually when
+tuning σt from 2.0 to 0, while an abrupt change is seen around the values of
+0.61 (Adult) and 0.1 (COMPAS). This is because optimal subgroups at leaves
+are formed around these discrimination values discl. In contrast, this behav-
+ior is not observed for the German Credit dataset, where gradual changes in
+the fairness metrics are seen with varying σt. Additionally, the German Credit
+dataset achieves nearly 0.00 DP and AOD around the discrimination threshold
+of σt = 1.64. A possible explanation for this is that the German dataset contains
+more features (20), each with numerous unique values, leading to the formation
+of more fine-grained and approximately equal-sized leaves. We conclude that
+our approach is most effective when the original dataset has a large number of
+features.
+As expected, balanced accuracy (BA) decreases as more leaves are relabeled
+by moving σt towards 0.
+For the Adult dataset with the raw test set, this
+deterioration in BA is notably more significant compared to the other datasets.
+In the experiments, it was observed that at lower values of the discrimination
+threshold σt, relabeling for the Adult dataset primarily involved leaf demotions.
+This resulted in a larger proportion of negative-class (≤50k) samples in the
+pre-processed dataset. Consequently, the classifier (LR) trained on this dataset
+became biased towards the negative class, leading to reduced balanced accuracy.
+Therefore, we emphasize the importance of tuning σt to an appropriate value
+according to the characteristics of the underlying dataset, in order to find an
+In general, this phenomenon applies to any probabilistic classifier (LR, SVM,
+or DT) when using the leaf relabeling technique, as the promotion and demotion
+of instances at the leaves affect the redistribution of class labels. Hence, rela-
+beling may enhance fairness metrics but negatively impact balanced accuracy,
+particularly if the process disproportionately affects instances of one class. A
+performance comparison of various classifiers on the pre-processed Adult dataset
+Support Vector Machine (SVM), and Decision Tree (DT), after applying FairUDT on the
+Adult dataset. Results are reported on Raw test set.
+Classifier
+DP ↓
+AOD ↓
+BA ↑
+Acc ↑
+LR
+SVM
+DT
+
+thresholds of σt. Error bands show the standard deviation of different results from 10-fold
+cross-validation. The black dashed line shows the corresponding metric after evaluating LR
+on the original dataset. The test set is sampled from raw data.
+6.2. KLgain vs. Egain
+In this work, all experiments utilized FairUDT with KLgain, as it consis-
+tently outperformed Egain in terms of fairness metrics across all datasets and
+classifiers used. A performance comparison between KLgain at σt = 0.61 and
+Egain at σt = 0.01 on the Adult dataset using the LR classifier is presented in
+information gain criteria. From the results, we see that Egain performs better
+in terms of Acc and BA, but gives poor performance on fairness metrics. The
+reason behind better performance of the KLgain based splitting criterion in
+fairness metrics can be attributed to its asymmetric nature. In our model, KL-
+divergence identifies splits where the distribution of the favored dataset deviates
+from that of the deprived dataset. Specifically, it measures the information gain
+when approximating the favored distribution with the deprived distribution,
+a gain that cannot be achieved when approximating the deprived distribution
+from the favored one. This directionality is crucial, highlighting why symmetric
+measures like Euclidean distance are inadequate in our context, as they fail to
+convey this directional information.
+
+(taking Adult dataset and LR classifier). Results are reported on Raw test set.
+Classifier
+DP ↓
+AOD ↓
+BA ↑
+Acc ↑
+FairUDT + KLgain
+FairUDT + Egain
+6.3. FairUDT vs. DADT
+Given that FairUDT is motivated by the Discrimination-aware Decision Tree
+learning (DADT) algorithm proposed by , we have presented a compara-
+Specifically, we use the IGC + IGS_Relab method from DADT to present the
+notes the results obtained from the original Adult dataset using a Decision Tree
+(DT) classifier. To maintain consistency, we have also employed the DT classifier
+to evaluate the predictive performance of the data pre-processed using FairUDT.
+The results indicate that while DADT slightly outperforms FairUDT in terms
+of demographic parity (DP), the average odds difference (AOD) achieved by
+our approach is significantly closer to 0.00. Regarding predictive performance,
+FairUDT demonstrates competitive balanced accuracy (BA) and accuracy com-
+pared to DADT.
+classifier) with DADT technique on Adult dataset. FairUDT results are reported on Raw test
+set. We report fairness metrics as unsigned.
+Method
+DP ↓
+AOD ↓
+BA ↑
+Acc ↑
+Raw
+DADT
+FairUDT
+the conventional decision tree. The assessment of interpretability is based on
+four metrics:
+the total number of nodes (encompassing both branches and
+leaves), sparsity, total tree depth, and simulatability [44, 45, 47]. These met-
+rics are evaluated across all the three datasets: Adult, COMPAS, and German
+resulting in higher simulatability. This is particularly evident in the COMPAS
+dataset, where simulatability is rated as ‘High’ by human evaluators. In con-
+trast, decision trees tend to exhibit a greater number of nodes and increased
+depth, leading to lower simulatability, as seen in the Adult dataset, where simu-
+latability is rated as ‘Low’. This comparison highlights that FairUDT maintains
+
+sures: number of nodes, sparsity, depth, and simulatability.
+Method
+Measure
+Adult
+COMPAS
+German Credit
+FairUDT
+Number of nodes
+Sparsity
+Depth
+Simulatability
+Medium
+High
+Medium
+Decision Tree Number of nodes
+Sparsity
+Depth
+Simulatability
+Low
+Medium-High
+Medium
+or enhances interpretability across various datasets compared to traditional de-
+cision trees. The details pertaining to training and parameters of decision trees,
+and measurement of simulatability can be seen in Appendix D.
+7. Discussion
+In this section, we discuss the operational and societal implications of FairUDT.
+We also highlight the limitations of our proposed method and suggest possible
+future directions to address these challenges.
+7.1. Practical Impact
+FairUDT has numerous practical applications across industries by ensuring
+subgroup-level fairness in decision-making. For example, in HR and recruitment,
+it can help organizations comply with anti-discrimination laws by eliminating
+credit scoring and loan approvals while maintaining compliance with regulations.
+An important feature of FairUDT is to control discrimination at subgroup
+level by fine tuning a hyperparameter in the pre-processing phase. This would
+be beneficial in order to meet different business needs and regulation constraints.
+The use of FairUDT will also help organizations comply with anti-discrimination
+laws and regulations, fostering trust from customers, employees, and the pub-
+lic. By promoting ethical AI practices and maintaining the interpretability of
+decision trees, FairUDT ensures understandable and trustworthy decisions. Ad-
+hancing the overall utility of decision-making processes.
+7.2. Theoretical Impact
+The theoretical impact of FairUDT lies in its novel approach to fairness-
+aware decision tree learning.
+To the best of our knowledge, it is the first
+framework to integrate discrimination-aware strategies with uplift modeling.
+Additionally, the proposed leaf relabeling strategy enables finer control over
+subgroup-level discrimination detection, advancing fairness methodologies. By
+
+functioning as a generalized data pre-processing tool independent of the classi-
+fier, FairUDT opens opportunities for seamless integration with other fairness
+techniques, such as in-processing algorithms and post-processing adjustments,
+paving the way for holistic fairness solutions.
+FairUDT can advance current fairness research and lay a foundation for
+future exploration in uplift modeling for discrimination detection and fairness-
+aware modeling.
+7.3. Societal Impact
+FairUDT can contribute positively to society by addressing biases in auto-
+mated decision-making, promoting fairness, and fostering inclusivity in areas
+it can reduce systemic discrimination and build trust in AI systems. However,
+there are potential risks: improper tuning of the model’s parameters could in-
+advertently amplify biases, and reliance on FairUDT without comprehensive
+checks may lead to overconfidence in fairness outcomes. These challenges high-
+light the need for careful implementation and regular audits to ensure its social
+benefits outweigh the risks.
+7.4. Limitations
+FairUDT operates by generating a tree to its maximum depth to capture
+highly biased instances at the leaves.
+While this approach can be effective
+for smaller datasets (such as those with fewer than 100k records), it may lead
+to overfitting and computationally complex trees in large-scale or streaming
+data settings, thereby impacting FairUDT’s performance.
+However, we em-
+phasize two key points: 1) training classifiers for socially sensitive tasks is not
+time-constrained, as the main focus of such applications is on ensuring fair-
+ness , and 2) under certain sparsity constraints, decision trees can perform
+well on datasets with large number of samples and features . Additionally,
+FairUDT’s current formulation requires binary class labels and binary sensitive
+attributes, which could pose a significant challenge in real-world scenarios where
+multiple classes and multiple sensitive attributes exist. Moreover, FairUDT can-
+not handle concept drift in online data streams. To address this, we recommend
+conducting frequent retrainings and comparing model performance to select the
+best one based on accuracy and fairness metrics.
+Studies on model transparency [44, 48] have suggested that more inter-
+models such as random forests (RF) and neural networks (NN). Therefore, in
+domains where achieving higher accuracy is a priority, compromising on trans-
+parency might be a necessary trade-off.
+7.5. Future Directions
+To date, discrimination is a subjective term, and there is no consensus on
+what constitutes discrimination. In this study, we aligned our efforts with the
+U.S. Equal Employment Opportunity Commission (EEOC) . However, the
+
+broad applicability of FairUDT allows for further extensions. In the future, we
+aim to enhance FairUDT to address intersectional or compound discrimination
+through multi-treatment uplift modeling. Another important aspect to improve
+our model’s performance would be to incorporate FairUDT into ensemble mod-
+els like Random Forests and XGBoost. Additionally, since our pre-processing
+approach involves a non-convex optimization problem, future work will explore
+convex optimization pre-processing frameworks based on uplift modeling.
+8. Conclusion
+In this paper, we introduce FairUDT, a data pre-processing approach de-
+signed to generate discrimination-free datasets. To the best of our knowledge,
+this is the first work to apply the concept of uplift modeling to discrimination
+identification. Specifically, we present a decision tree-based discrimination iden-
+tifier that leverages uplift modeling to discover discriminatory subgroups within
+the data. Additionally, we introduce a modified leaf relabeling criterion to re-
+move discrimination at the tree leaves. Our results demonstrated that FairUDT
+is applicable to any real-world dataset without requiring feature engineering and
+produces competitive results compared to key related pre-processing approaches.
+In terms of popular fairness metrics and predictive performance, the results of
+FairUDT confirm the effectiveness of our approach. We also demonstrate that
+tasks. Our proposed pre-processing method preserves utility in decision-making
+and ensures group fairness at a granular level. Moreover, through probabilis-
+tic descriptions, our method connects to the broader literature on statistical
+learning and information theory.
+Funding
+No funding was received for conducting this study.
+CRediT authorship contribution statement
+Conceptualization; Anam Zahid, Abdur Rehman Ali, Rai Shahnawaz, Shaina
+Raza; Data curation: Anam Zahid, Abdur Rehman Ali; Formal analysis: Anam
+Zahid, Abdur Rehman Ali, Rai Shahnawaz; Methodology: Anam Zahid, Abdur
+Rehman Ali, Rai Shahnawaz; Project administration: Faisal Kamiran, Asim
+Karim, Shaina Raza; Supervision: Faisal Kamiran, Asim Karim, Shaina Raza;
+Validation: Faisal Kamiran, Asim Karim, Shaina Raza; Visualization: Abdur
+Rehman Ali; Writing – original draft: Anam Zahid, Rai Shahnawaz; Writing –
+review & editing: Faisal Kamiran, Asim Karim, Shaina Raza
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or
+personal relationships that could have appeared to influence the work reported
+in this paper.
+
+Appendix A. Notations and Definitions
+We are given a dataset (X, S, Y ) consisting of N number of records. Here, X
+represents the elements of non-sensitive attributes. Without loss of generality,
+assume that S = {SF , SD} is a binary sensitive attribute such as gender or
+race, and the outcome Y is a binary variable. The dataset is further split into
+two groups; favored (X, SF , Y ) and deprived (X, SD, Y ), based on the values
+of S. Further, N F denotes the number of records in the favored group, and
+N D indicates the number of records in the deprived group respectively (i.e.,
+N = N F + N D). The class variable Y = {Y +, Y −} has y as a particular label
+among a finite number of possible outcomes. Hence, all involved probability
+distributions are discrete. The probabilities for the favored and deprived groups
+are represented by P F and P D, respectively, while P F (Y ) and P D(Y ) denote
+the probabilities of the class attribute within the favored and deprived groups.
+In standard decision trees, there are separate testing techniques for categor-
+ical and numerical attributes. In our context, there is a single split test A for
+each categorical attribute which produces a finite number of outcomes a ∈A
+based on distinct values. For numerical attributes, data discretization has been
+performed; both favored and deprived groups are combined into a single dataset
+for this purpose. For a specific test A, conditional probabilities over favored and
+deprived groups would have the form P F (Y |A) and P D(Y |A) separately. Here,
+P F (Y |a) and P D(Y |a) define the estimated probability distributions for the
+favored and deprived groups respectively, for the specific outcome A = a.
+Next, we define the two fairness criteria implemented in FairUDT: demo-
+graphic parity and average odds difference. Additionally, we introduce the math-
+ematical notation for balanced accuracy, the metric used alongside accuracy to
+evaluate the performance of the data classifier.
+Demographic parity (DP): Demographic parity (DP), also known as total
+variation (TV), statistical parity, or risk difference, is defined as measuring the
+discrepancy between predicting a positive outcome ˆY = Y + under S = SD and
+S = SF . Formally, it can be written as:
+P( ˆY = Y +|S = SF ) = P( ˆY = Y +|S = SD)
+In real life, achieving this equality constraint is very difficult. Hence, a more
+relaxed criterion known as Difference in Demographic Parity (DDP) is defined:
+DDP = P( ˆY = Y +|S = SF ) −P( ˆY = Y +|S = SD)
+A classifier is said to be fair if the value of its DDP is 0, i.e., parity across all
+groups. The highest and lowest values of 1 and -1, respectively, signify complete
+unfairness. For clarity and consistency, we have used the term demographic
+parity (DP) throughout our paper to refer to DDP.
+Average odds difference (AOD): Before defining average odds difference
+(AOD), it is imperative to define equality of odds (EOD), since AOD is a relaxed
+version of it. EOD is satisfied when both the True Positive Rate (TPR) and
+
+False Positive Rate (FPR) are independent of the value of the sensitive attribute.
+It is defined as follows:
+TPR : P( ˆY = Y +|S = SF , Y = Y +) −P( ˆY = Y +|S = SD, Y = Y +) =
+FPR : P( ˆY = Y +|S = SF , Y = Y −) −P( ˆY = Y +|S = SD, Y = Y −)
+In its general form, EOD can be written as:
+P( ˆY = Y +|S = SF , Y = y) = P( ˆY = Y +|S = SD, Y = y)
+= P( ˆY = Y +|Y = y)
+∀y ∈{+, −}
+Similarly, AOD returns the mean value of the difference between TPR and FPR
+for the favored and deprived groups. It can be specified as:
+[TPRS=SD −TPRS=SF ] + [FPRS=SD −FPRS=SF ]
+An AOD of 0 indicates a perfect EOD.
+Balanced accuracy (BA): To measure the performance of the classifier,
+we calculate balanced accuracy (BA) instead of measuring accuracy alone. BA
+measures the average accuracy across all classes. Mathematically, it is calculated
+as the arithmetic mean of TPR and TNR (True Negative Rate):
+BA = TPR + TNR
+Balanced accuracy provides a fairer assessment of model performance com-
+pared to traditional accuracy, particularly when classes are imbalanced, as it
+considers both the Y + and Y −class performance.
+Appendix B. KL-Divergence Propositions
+Proposition 3.1:. KLgain will be minimum iff favored and deprived class distri-
+butions are identical for all outcomes of a test A (i.e. P F (Y |a) = P D(Y |a) ).
+It is driven by the fact that gain value should be maximized in proportion to
+the divergence achieved between favored and deprived class distributions. It is
+an accepted property of Kullback-leibeler divergence that it would be always
+greater than or equal to zero KL(P F |P D) ≥0, known as Gibbs inequality
+. Hence, for identical P F and P D distributions it would have zero value
+and consolidating it with the fact that unconditional (second) term of KLgain
+is independent of the test proves the claim.
+Proposition 3.2:. KLgain would be zero if A is statistically independent of Y for
+both favored and deprived distributions i.e. P F (Y |a) = P F (Y ) and P D(Y |a) =
+P D(Y ).
+It will ensure that tests with no information gain for class are not selected for
+the split as in standard decision trees. Using assumption from the statement
+
+that A is statistically independent of Y, we can replace fy(a) with fy (class
+probabilities test independence for favored distribution) and dy(a) with dy (class
+probabilities test independence for favored distribution) in Equation (3.5), it will
+equalize both the terms involved in the equation eventually making KLgain(A)
+equals zero. However, class distributions after the split can be more similar than
+before which will lead to negative values for splitting criterion. It implies that
+there can be split tests even worse than the independent split.
+Proposition 3.3:. KLgain reduces to entropy gain when deprived dataset is ab-
+sent.
+Theorem 3.1. KLgain test does satisfy the stated propositions 3.1-3.3. Proof
+for proposition 3.3 can be found in , and reduction of KLgain to entropy
+gain can be seen in .
+Appendix C. Squared Euclidean Distance Propositions
+Proposition 3.5:. Egain will be minimum iff favored and deprived class distri-
+butions are same for all outcomes of a test A.
+It is a well known and understandable property of Euclidean distance to be
+always greater than or equal to zero as it is a square of difference between prob-
+ability distributions values. Further, an argument similar to the one used in
+proof of proposition 3.1 proves the claim.
+Proposition 3.6:. Egain would be zero if A is statistically independent of Y for
+both favored and deprived datasets.
+Deriving from the assumption, we can replace fy(a) with fy and dy(a) with dy
+in Equation (3.8), as a consequence it will balance the two terms involved, hence
+making Egain(A) equals zero.
+Proposition 3.7:. Egain reduces to GINIgain if either favored or deprived group
+is missing.
+Egain reduction to GINIgain is demonstrated in , when either of the
+group is absent.
+Theorem 3.2. Egain(A) verifies the propositions 3.5-3.7 as proved above.
+In this section, we elucidate our evaluation of the simulatability of FairUDT.
+To measure simulatability, we first identify subgroups at the leaves that exhibit
+high discriminatory behavior.
+A subgroup is defined by a specific set of at-
+tributes and their values, representing the input samples for that subgroup.
+This identification is accomplished by selecting a single tree leaf and tracing the
+path from the root node to that leaf. Several discriminatory subgroups for the
+Adult dataset are shown in D.8.
+
+which belong to favored individuals (male) from the positive class (m+), while
+only one instance belongs to the deprived group (female) from the negative
+class (f −). This subgroup exhibits the highest discrimination value (2.0) in our
+dataset. Similarly, the fifth subgroup shows a discrimination value of 1.1, which
+can be explained by looking at the gender distribution across the positive and
+negative classes within the subgroup.
+We collected 30 subgroups containing discrimination, as well as subgroups
+that are free from discrimination, from the Adult, COMPAS, and German Credit
+datasets. Subsequently, we asked four computer science graduates to assign each
+subgroup a discrimination value (from 0 to 2), and categorize it on a scale from
+‘High’ to ‘Low’ based on their understanding of the attributes and their values
+the average results for each dataset.
+We then trained the decision tree using the default parameters from the
+scikit-learn library , with the exception of setting the minimum number of
+samples in the leaf node to 3 to avoid overfitting. As discussed above, the same
+procedure was repeated to determine the simulatability of the decision tree for
+each dataset.
+References
+ US Government, Uniform Guidelines on Employee Selection Procedures
+Https://www.govinfo.gov/content/pkg/CFR-2011-title29-
+vol4/xml/CFR-2011-title29-vol4-part1607.xml.
+ S. Barocas, A. D. Selbst, Big Data’s Disparate Impact, California Law
+Review 104 (2016) 671.
+ T. Calders, I. Zliobaite, Why Unbiased Computational Processes can Lead
+to Discriminative Decision Procedures, in: Discrimination and Privacy in
+the Information Society, Springer, 2013, pp. 43–57.
+ B. T. Luong, S. Ruggieri, F. Turini, k-NN as an Implementation of Situa-
+tion Testing for Discrimination Discovery and Prevention, in: Proceedings
+of the 17th ACM SIGKDD International Conference on Knowledge Discov-
+ery and Data Mining, 2011, pp. 502–510.
+ F. Calmon, D. Wei, B. Vinzamuri, K. N. Ramamurthy, K. R. Varshney,
+Optimized Pre-Processing for Discrimination Prevention, in: Advances in
+Neural Information Processing Systems, 2017, pp. 3995–4004.
+ M. Feldman, S. A. Friedler, J. Moeller, C. Scheidegger, S. Venkatasubra-
+manian, Certifying and Removing Disparate Impact, in: Proceedings of
+the 21th ACM SIGKDD International Conference on Knowledge Discovery
+and Data Mining, ACM, 2015, pp. 259–268.
+
+tected by KL-gain tree on Adult dataset. Here, S = gender, SF = male and, SD = female
+No.
+Subgroup
+m+ : m−
+f + : f −
+discl
+occupation=Craft-repair
+capital_gain<5119.0
+race=White
+education=Masters
+hours_per_week>40.5
+native_country=United-States
+workclass=Private
+occupation=Exec-managerial
+workclass=Self-emp-inc
+capital_loss=1537-1881
+relationship=Not-in-family
+age=40-50
+occupation=Craft-repair
+capital_gain<5119.0
+race=Other
+educational_num=12.0-12.1
+hours_per_week=37.5-40.5
+occupation=Exec-managerial
+workclass=Self-emp-not-inc
+educational_num>12.1
+marital_status=Never-married
+capital_gain<5119.0
+age=40.0-50.0
+hours_per_week>40.5
+education=Masters
+occupation=Craft-repair
+capital_gain<5119.0
+race=Black
+workclass=Private
+hours_per_week>40.5
+marital_status=Married-civ-spouse
+
+ D. Madras, E. Creager, T. Pitassi, R. Zemel, Learning Adversarially Fair
+and Transferable Representations, in: J. Dy, A. Krause (Eds.), Proceed-
+ings of the 35th International Conference on Machine Learning (MLR),
+volume 80 of PMLR, PMLR, Stockholmsmässan, Stockholm Sweden, 2018,
+pp. 3384–3393. URL: http://proceedings.mlr.press/v80/madras18a.
+html.
+ E. Raff, J. Sylvester, S. Mills, Fair Forests: Regularized Tree Induction to
+Minimize Model Bias, in: Proceedings of the 2018 AAAI/ACM Conference
+on AI, Ethics, and Society, 2018, pp. 243–250.
+ F. Kamiran, T. Calders, M. Pechenizkiy, Discrimination Aware Decision
+Tree Learning, in: Proceedings of the IEEE 10th International Conference
+on Data Mining (ICDM), IEEE, 2010, pp. 869–874.
+ S. Aghaei, M. J. Azizi, P. Vayanos, Learning Optimal and Fair Decision
+Tees for Non-Discriminative Decision-Making, in: Proceedings of the AAAI
+Conference on Artificial Intelligence, volume 33, 2019, pp. 1418–1426.
+ A. Valdivia, J. Sánchez-Monedero, J. Casillas, How Fair Can We Go in
+Machine Learning? Assessing the Boundaries of Accuracy and Fairness,
+International Journal of Intelligent Systems (2021) 1–25. URL: https://
+doi.org/10.1002/int.22354.
+ P. K. Lohia, K. Natesan Ramamurthy, M. Bhide, D. Saha, K. R. Varshney,
+R. Puri, Bias Mitigation Post-processing for Individual and Group Fairness,
+in: Proceedings of the 2019 IEEE International Conference on Acoustics,
+Speech and Signal Processing, ICASSP, 2019, pp. 2847–2851. doi:10.1109/
+ICASSP.2019.8682620.
+ M. Hardt, E. Price, N. Srebro, et al., Equality of Opportunity in Supervised
+Learning, in: Proceedings of the 30th International Conference on Neural
+Information Processing Systems, 2016, pp. 3323–3331.
+ P. Awasthi, M. Kleindessner, J. Morgenstern, Equalized Odds Postprocess-
+ing Under Imperfect Group Information, in: Proceedings of the Interna-
+tional Conference on Artificial Intelligence and Statistics, PMLR, 2020, pp.
+ P. Gutierrez, J.-Y. Gérardy, Causal Inference and Uplift Modelling: A Re-
+view of the Literature, in: Proceedings of the 2016 International Conference
+on Predictive Applications and APIs, PMLR, 2017, pp. 1–13.
+ B. Becker, R. Kohavi, Adult, UCI Machine Learning Repository, 1996. DOI:
+https://doi.org/10.24432/C5XW20.
+ J. Larson, M. Roswell, V. Atlidakis, COMPASS Recidivism Dataset, 2016.
+URL: https://github.com/propublica/compas-analysis.
+
+ D. Dua, C. Graff, German Credit Dataset, UCI Machine Learning Reposi-
+tory, 2017. URL: http://archive.ics.uci.edu/ml.
+ F. Kamiran, T. Calders,
+Classifying Without Discriminating,
+in: Pro-
+ceedings of the 2nd International Conference on Computer, Control and
+Communication, IC4, IEEE, 2009, pp. 1–6.
+ F. Kamiran, T. Calders, Data Preprocessing Techniques for Classification
+Without Discrimination, Knowledge and Information Systems 33 (2012)
+ M. Wan, D. Zha, N. Liu, N. Zou, In-processing Modeling Techniques for
+Machine Learning Fairness: A Survey, ACM Transactions on Knowledge
+Discovery from Data 17 (2023) 1–27.
+ R. Jiang, A. Pacchiano, T. Stepleton, H. Jiang, S. Chiappa, Wasserstein
+Fair Classification, in: Uncertainty in artificial intelligence, PMLR, 2020,
+pp. 862–872.
+ A. Agarwal, M. Dudík, Z. S. Wu, Fair Regression: Quantitative Definitions
+and Reduction-based Algorithms, in: International Conference on Machine
+Learning, PMLR, 2019, pp. 120–129.
+ S. Saxena, S. Jain, Exploring and Mitigating Gender Bias in Book Recom-
+mender Systems with Explicit Feedback, Journal of Intelligent Information
+Systems (2024). doi:10.1007/s10844-023-00827-8.
+ D. García-Soriano, F. Bonchi,
+Maxmin-fair Ranking:
+Individual Fair-
+ness under Group-fairness Constraints, in: Proceedings of the 27th ACM
+SIGKDD Conference on Knowledge Discovery & Data Mining, 2021, pp.
+ P. Lahoti, A. Beutel, J. Chen, K. Lee, F. Prost, N. Thain, X. Wang, E. Chi,
+Fairness Without Demographics through Adversarially Reweighted Learn-
+ing, Advances in neural information processing systems 33 (2020) 728–740.
+ S. Garg, V. Perot, N. Limtiaco, A. Taly, E. H. Chi, A. Beutel, Counterfac-
+tual Fairness in Text Classification through Robustness, in: Proceedings
+of the 2019 AAAI/ACM Conference on AI, Ethics, and Society, 2019, pp.
+ C. Sweeney, M. Najafian, Reducing Sentiment Polarity for Demographic
+Attributes in Word Embeddings using Adversarial Learning, in: Proceed-
+ings of the 2020 Conference on Fairness, Accountability, and Transparency,
+2020, pp. 359–368.
+ B. H. Zhang, B. Lemoine, M. Mitchell, Mitigating Unwanted Biases with
+Adversarial Learning, in: Proceedings of the 2018 AAAI/ACM Conference
+on AI, Ethics, and Society, 2018, pp. 335–340.
+
+ H. Kim, S. Shin, J. Jang, K. Song, W. Joo, W. Kang, I.-C. Moon, Coun-
+terfactual Fairness with Disentangled Causal Effect Variational Autoen-
+coder, in: Proceedings of the AAAI Conference on Artificial Intelligence,
+volume 35, 2021, pp. 8128–8136.
+ S. Park, S. Hwang, D. Kim, H. Byun, Learning Disentangled Representa-
+tion for Fair Facial Attribute Classification via Fairness-aware Information
+Alignment, in: Proceedings of the AAAI Conference on Artificial Intelli-
+gence, volume 35, 2021, pp. 2403–2411.
+ P. Cheng, W. Hao, S. Yuan, S. Si, L. Carin, FairFil: Contrastive Neural De-
+biasing Method for Pretrained Text Encoders, in: International Conference
+on Learning Representations, 2020, pp. 1–12.
+ C. Zhou, J. Ma, J. Zhang, J. Zhou, H. Yang, Contrastive Learning for
+Debiased Candidate Generation in Large-scale Recommender Systems, in:
+Proceedings of the 27th ACM SIGKDD Conference on Knowledge Discov-
+ery & Data Mining, 2021, pp. 3985–3995.
+ F. Kamiran, A. Karim, X. Zhang,
+Decision Theory for Discrimination-
+Aware Classification, in: Proceedings of the IEEE 12th International Con-
+ference on Data Mining, ICDM’12, IEEE, 2012, pp. 924–929. doi:10.1109/
+ICDM.2012.45.
+ W. Zhang, A. Bifet, FEAT: A Fairness-Enhancing and Concept-Adapting
+Decision Tree Classifier,
+in:
+Discovery Science, volume 12323 of Lec-
+ture Notes in Computer Science, Springer International Publishing, Cham,
+Switzerland, 2020, pp. 175–189.
+ A. Castelnovo, A. Cosentini, L. Malandri, F. Mercorio, M. Mezzanzanica,
+FFTree: A Flexible Tree to Handle Multiple Fairness Criteria, Information
+Processing & Management 59 (2022) 103099.
+ M. Jaskowski, S. Jaroszewicz, Uplift Modeling for Clinical Trial Data, in:
+Proceedings of the 29th International Coference on International Confer-
+ence on Machine Learning (ICML), Workshop on Clinical Data Analysis,
+Omnipress, Madison, WI, United States, 2012, pp. 1–8.
+ J. Gao, X. Zheng, D. Wang, Z. Huang, B. Zheng, K. Yang, UTBoost: A
+Tree-boosting based System for Uplift Modeling, CoRR abs/2312.02573
+(2023). doi:10.48550/ARXIV.2312.02573. arXiv:2312.02573.
+ B. Hansotia, B. Rukstales, Incremental Value Modeling, Journal of Inter-
+active Marketing 16 (2002) 1–35.
+ X. Su, C.-L. Tsai, H. Wang, D. M. Nickerson, B. Li, Subgroup Analysis via
+Recursive Partitioning, Journal of Machine Learning Research 10 (2009)
+
+ P. Rzepakowski, S. Jaroszewicz,
+Decision Trees for Uplift Modeling,
+in:
+Proceedings of the 10th International Conference on Data Mining,
+ICDM’10, IEEE, 2010, pp. 441–450.
+ Y. He, K. Burghardt, S. Guo, K. Lerman, Inherent Trade-offs in the Fair
+Allocation of Treatments, 2020. arXiv:2010.16409.
+ S. Athey, G. Imbens,
+Recursive Partitioning for Heterogeneous Causal
+Effects, Proceedings of the National Academy of Sciences 113 (2016) 7353–
+7360. doi:10.1073/pnas.1510489113.
+ N. Jo, S. Aghaei, J. Benson, A. Gomez, P. Vayanos, Learning Optimal
+Fair Decision Trees: Trade-offs Between Interpretability, Fairness, and Ac-
+curacy, in: Proceedings of the 2023 AAAI/ACM Conference on AI, Ethics,
+and Society, AIES ’23, Association for Computing Machinery, New York,
+NY, USA, 2023, p. 181–192. URL: https://doi.org/10.1145/3600211.
+3604664. doi:10.1145/3600211.3604664.
+ C. Rudin, C. Chen, Z. Chen, H. Huang, L. Semenova, C. Zhong,
+In-
+lenges, Statistics Surveys 16 (2022) 1 – 85. URL: https://doi.org/10.
+1214/21-SS133. doi:10.1214/21-SS133.
+ N. Scarpato,
+A. Nourbakhsh,
+P. Ferroni,
+S. Riondino,
+M. Roselli,
+F. Fallucchi, P. Barbanti, F. Guadagni, F. M. Zanzotto,
+Evaluat-
+ing Explainable Machine Learning Models for Clinicians,
+Cognitive
+Computation 16 (2024) 1436–1446. URL: https://doi.org/10.1007/
+s12559-024-10297-x. doi:10.1007/s12559-024-10297-x.
+ D. V. Carvalho, E. M. Pereira, J. S. Cardoso,
+Machine learning inter-
+pretability: A survey on methods and metrics, Electronics 8 (2019) 832.
+ I. Csiszár, P. C. Shields, et al.,
+Information Theory and Statistics: A
+Tutorial,
+Foundations and Trends in Communications and Information
+Theory 1 (2004) 417–528.
+ M. Sołtys, S. Jaroszewicz, P. Rzepakowski, Ensemble Methods for Uplift
+Modeling, Data Mining and Knowledge Discovery 29 (2015) 1531–1559.
+ T. S. Han, K. Kobayashi, Mathematics of Information and Coding (Trans-
+lations of Mathematical Monographs), American Mathematical Society,
+USA, 2001.
+ S. Yu, A. Shaker, F. Alesiani, J. Principe, Measuring the Discrepancy be-
+tween Conditional Distributions: Methods, Properties and Applications,
+in: C. Bessiere (Ed.), Proceedings of the 29th International Joint Confer-
+ence on Artificial Intelligence, IJCAI’20, IJCAI Organization, 2020, pp.
+2777–2784. doi:10.24963/ijcai.2020/385.
+
+ S. Kullback, Letter to the Editor: The Kullback-Leibler Distance, The
+American Statistician (1987) 338–341.
+ S. Hajian, J. Domingo-Ferrer, A Methodology for Direct and Indirect Dis-
+crimination Prevention in Data Mining, IEEE Transactions on Knowledge
+and Data Engineering 25 (2013) 1445–1459.
+ S.
+Ruggieri,
+Using
+t-Closeness
+Anonymity
+to
+Control
+for
+Non-
+Discrimination, Transactions on Data Privacy 7 (2014) 99–129.
+ R. K. E. Bellamy, K. Dey, M. Hind, S. C. Hoffman, S. Houde, K. Kannan,
+P. Lohia, J. Martino, S. Mehta, A. Mojsilović, S. Nagar, K. N. Ramamurthy,
+J. Richards, D. Saha, P. Sattigeri, M. Singh, K. R. Varshney, Y. Zhang,
+AI Fairness 360: An Extensible Toolkit for Detecting, Understanding, and
+Mitigating Unwanted Algorithmic Bias, IBM Journal of Research and De-
+velopment 63 (2019) 1–15. doi:10.1147/JRD.2019.2942287.
+ J. M. Klusowski, P. M. Tian,
+Large scale prediction with decision
+trees,
+Journal of the American Statistical Association 119 (2023) 525–
+537. URL: https://doi.org/10.1080/01621459.2022.2126782. doi:10.
+ U.S. Equal Employment Opportunity Commission637, Discrimination by
+Type, 2024. Https://www.eeoc.gov/discrimination-type.
+ H. Falk, Inequalities of JW Gibbs, American Journal of Physics 38 (1970)
+ J. R. Quinlan,
+Induction of Decision Trees,
+Machine learning 1 (1986)
+ L. Breiman, J. Friedman, C. Stone, R. Olshen, Classification and Regres-
+sion Trees, Taylor & Francis, Florida, USA, 1984. URL: https://books.
+google.com.pk/books?id=JwQx-WOmSyQC.
+ F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel,
+M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Pas-
+sos, D. Cournapeau, M. Brucher, M. Perrot, E. Duchesnay, Scikit-learn:
+Machine learning in Python,
+Journal of Machine Learning Research 12

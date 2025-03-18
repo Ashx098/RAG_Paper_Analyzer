@@ -1,0 +1,496 @@
+[
+  {
+    "text": "See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/3950332 VAT: A tool for visual assessment of (cluster) tendency Conference Paper \u00b7 February 2002 DOI: 10.1109/IJCNN.2002.1007487 \u00b7 Source: IEEE Xplore CITATIONS READS 2 authors, including: James C. Bezdek University of Missouri 428 PUBLICATIONS 63,610 CITATIONS All content following this page was uploaded by James C. Bezdek on 18 March 2016. The user has requested enhancement of the downloaded file. VAT: A Tool for Visual Assessment of (Cluster) Tendency J.C. Bezdek* R.J. Hathaway* Department of Computer Science Mathematics and Computer Science Department University of West Florida Georgia Southern University Pensacola, FL 32514 Statesboro, GA 30460",
+    "metadata": {
+      "section_id": 0,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 105
+    }
+  },
+  {
+    "text": "R.J. Hathaway* Department of Computer Science Mathematics and Computer Science Department University of West Florida Georgia Southern University Pensacola, FL 32514 Statesboro, GA 30460 tendency of a set of Objects O = {o1,\u2026,on} when they are represented either as object vectors or by numerical pairwise dissimilarity values. The objects are reordered and the reordered matrix of pair wise object dissimilarities is displayed as an intensity image. Clusters are indicated by dark blocks of pixels along the diagonal. I. INTRODUCTION We consider a type of preliminary data analysis related to the pattern recognition problem of clustering. Clustering or cluster analysis is the problem of partitioning a set of objects O = {o1,\u2026, on} into c self-similar subsets based on available data and some well-defined measure of (cluster) similarity. In some cases, a geometric description of the clusters (e.g. by \u201ccluster centers\u201d in data space) is also desired and some clustering methods are able to produce such geometric descriptors. The type of clusters found is strongly related to the properties of the mathematical model that underlies the clustering method. All clustering algorithms will find an arbitrary (up to 1 \u2264 c \u2264 n) number of clusters, even if no \u201cactual\u201d clusters exist. Therefore, a fundamentally important question to ask before applying any particular (and potentially biasing) clustering algorithm is: Are clusters present at all? The problem of determining whether clusters are present as a step prior to actual clustering is called the assessing of clustering tendency. Various formal (statistically based) and informal techniques for tendency assessment are discussed in Jain and Dubes and Everitt . None of the existing approaches is completely satisfactory (nor will they ever be). The purpose of this note is to add a simple and intuitive visual approach to the existing repertoire of tendency assessment tools. Visual approaches for various data analysis problems have been widely studied in the last 25 years; Tukey and Cleveland are standard sources for many visual techniques. The visual approach for assessing cluster tendency introduced here can be used in all cases involving numerical data. It is both convenient and expected that new methods in clustering have a catchy acronym. Consequently, we call this new tool VAT (visual assessment of tendency). The VAT approach presents pair wise dissimilarity information about the set of objects O = {o1,\u2026, on} as a square digital image with n2 pixels, after the objects are suitably reordered so that the image is better able to highlight potential cluster structure. To go further into the VAT approach requires some additional background on the types of data typically available to describe the set O = {o1,\u2026, on}. There are two common data representations of O upon which clustering can be based. When each object in O is represented by a (column) vector x in s \u211c, the set X = {x1,\u2026,xn} \u2282 s \u211c is called an object data representation of O. The kth component of the ith feature vector (xki) is the value of the kth feature (e.g., height, weight, length, etc.) of the ith object. It is in this data space that practitioners sometimes seek geometrical descriptors of the clusters. Alternatively, when each pair of objects in O is represented by a relationship, then we have relational data. The most common case of relational data is when we have (a matrix of) dissimilarity data, say R = [Rij] , where Rij is the pair wise dissimilarity (usually a distance) between objects oi and oj, for 1 \u2264 i, j \u2264 n. More generally, R can be a matrix of similarities based on a variety of measures [5,6]. The VAT tool is widely applicable because it displays a reordered form of dissimilarity data, which itself can always be obtained from the original data for O. If the original data consists of a matrix of pair wise (symmetric) similarities S = [Sij], then dissimilarities can be obtained through several simple transformations. For example, we can take Rij = Smax \u2013 Sij, where Smax denotes the largest similarity value. If the original data set consists of object data X = {x1,\u2026,xn} \u2282 s \u211c, then Rij can be computed as Rij = j",
+    "metadata": {
+      "section_id": 0,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n[Sij]"
+      ],
+      "citations": [
+        "5"
+      ],
+      "word_count": 692
+    }
+  },
+  {
+    "text": "Therefore, the VAT approach is applicable to virtually all numerical data sets. In the next section we define the main idea of the VAT approach and then give a description of how it can be implemented. Section 3 discusses relatives of VAT, while Section 4 gives a series of examples using various real and artificial data sets that illustrate various facets of the VAT tool. We attempt to give the reader a feel for what various types of cluster structure (including no cluster structure) may look like in VAT displays. The final section contains some concluding remarks and topics for further research.",
+    "metadata": {
+      "section_id": 2,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 102
+    }
+  },
+  {
+    "text": "(2a) Rij = Rji (2b) Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2b)",
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 188
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 183
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 184
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 184
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 185
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 185
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 185
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 185
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 185
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Rii = 0 (2c) We display R as an intensity image I, which we call a dissimilarity image. The intensity or gray level gij of pixel (i,j) depends on the value of Rij. The value Rij = 0 corresponds to gij = 0 (pure black); the value Rij = Rmax, where Rmax denotes the largest dissimilarity value in R, gives gij = Rmax (pure white). Intermediate values of Rij produce pixels with intermediate levels of gray in a set of gray levels G = {G1,\u2026,Gm}. The images shown below use 256 equally spaced gray levels, with G1 = 0 (black) and Gm = Rmax (white). The displayed gray level of pixel (i,j) is the level gij \u2208 G that is closest to Rij. As an example, Fig. 1 lists a small dissimilarity matrix and its corresponding image. The 0 values on the main diagonal of R generate main diagonal pixels that are black. Notice also that the largest dissimilarity value (0.78) gives two white pixels in the dissimilarity image. R = = I Fig. 1. A dissimilarity matrix and its corresponding dissimilarity image. Fig. Fig. Fig.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(2c)",
+        "\n(i,j)",
+        "\n(white)"
+      ],
+      "citations": [],
+      "word_count": 186
+    }
+  },
+  {
+    "text": "Fig. Fig. 2. Scatterplot of Data Set A. Fig. 3. Scatterplot and dissimilarity image for Data Set A (original random ordering). Fig. 4. Scatterplot and ODI for Data Set A (reordered) denote the set of all ordered index pairs (i,j) in I \u00d7 J such that Rij = R min arg pq J q ,I p . This differs from the usual meaning of \u201carg min\u201d only in that a call to arg min (f(*)) ordinarily returns only one value of (*) that minimizes f, whereas here we collect all values of (*) that yield the (same) minimizing value. The \u201carg max\u201d notation is defined similarly. The algorithm for producing an ordered dissimilarity matrix R~ = [Rkikj] from the original dissimilarity matrix R is now given. The permuted indices of the n objects are stored in an array P[ ], with P(i) = ki, i = 1, \u2026, n. VAT Ordering and Display Algorithm Step 1 Set K = {1,2,\u2026,n}; I = J = \u2205; P = (0,\u2026,0). Step 2 Select (i,j) \u2208 R max arg pq K q K p Set P(1) = i; I = {i}; and J = K \u2013 {i}.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n[Rkikj]"
+      ],
+      "citations": [],
+      "word_count": 194
+    }
+  },
+  {
+    "text": "VAT Ordering and Display Algorithm Step 1 Set K = {1,2,\u2026,n}; I = J = \u2205; P = (0,\u2026,0). Step 2 Select (i,j) \u2208 R max arg pq K q K p Set P(1) = i; I = {i}; and J = K \u2013 {i}. Step 3 For r = 2,\u2026, n: Select (i,j) \u2208 R min arg pq J q ,I p Set P(r) = j; Replace I ! I\u222a{j} and J ! J\u2013{j}. Next r. Step 4 Obtain the ordered dissimilarity matrix R~ using the ordering array P as: ij R~ = )j( P )i( P R , for 1 \u2264 i,j \u2264 n. Step 5 Display the reordered matrix R~ as the ODI I~ using the conventions given above.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 122
+    }
+  },
+  {
+    "text": "Step 2 Select (i,j) \u2208 R max arg pq K q K p Set P(1) = i; I = {i}; and J = K \u2013 {i}. Step 3 For r = 2,\u2026, n: Select (i,j) \u2208 R min arg pq J q ,I p Set P(r) = j; Replace I ! I\u222a{j} and J ! J\u2013{j}. Next r. Step 4 Obtain the ordered dissimilarity matrix R~ using the ordering array P as: ij R~ = )j( P )i( P R , for 1 \u2264 i,j \u2264 n. Step 5 Display the reordered matrix R~ as the ODI I~ using the conventions given above.",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 103
+    }
+  },
+  {
+    "text": "Step 2 Select (i,j) \u2208 R max arg pq K q K p Set P(1) = i; I = {i}; and J = K \u2013 {i}. Step 3 For r = 2,\u2026, n: Select (i,j) \u2208 R min arg pq J q ,I p Set P(r) = j; Replace I ! I\u222a{j} and J ! J\u2013{j}. Next r. Step 4 Obtain the ordered dissimilarity matrix R~ using the ordering array P as: ij R~ = )j( P )i( P R , for 1 \u2264 i,j \u2264 n. Step 5 Display the reordered matrix R~ as the ODI I~ using the conventions given above. R = = I VAT R~ = = I~ Fig. 5. Results of applying the VAT algorithm to Data Set A. The lower view in Fig. 5 contains the pair ( I~ R~ ). Our inference from I~ is that the objects underlying R lie in two small clusters, one having two objects, the other with three. Examination of R~ confirms this, as it possesses two diagonal blocks of sizes 2 \u00d7 2 and 3 \u00d7 3 which evidently correspond to the substructure visually suggested by I~ .",
+    "metadata": {
+      "section_id": 4,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 191
+    }
+  },
+  {
+    "text": "RELATIVES OF VAT We can roughly group visual display methods into three categories: visual displays of clusters, visual displays to find clusters, and visual displays to assess tendency. (Admittedly, there is a very fine line distinguishing methods in the second and third groups.) The earliest published reference we can find that discusses visual displays (as images) of clusters is the 1973 SHADE approach of Ling . SHADE approximates what is now regarded as a nice digital image",
+    "metadata": {
+      "section_id": 6,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 77
+    }
+  },
+  {
+    "text": "RELATIVES OF VAT We can roughly group visual display methods into three categories: visual displays of clusters, visual displays to find clusters, and visual displays to assess tendency. (Admittedly, there is a very fine line distinguishing methods in the second and third groups.) The earliest published reference we can find that discusses visual displays (as images) of clusters is the 1973 SHADE approach of Ling . SHADE approximates what is now regarded as a nice digital image representation of clusters using a crude 15 level halftone scheme created by overstriking standard printed characters. SHADE displays the lower triangular part of the complete square display. Visual identification of (triangular) patterns is considerably more difficult than when a full, square display is used. SHADE was used after application of a hierarchical clustering scheme, as an alternative to visual displays of hierarchically nested clusters via the standard dendrogram. Closely related to SHADE, but presented more in the spirit of finding clusters (i.e., as a visual clustering algorithm) rather than displaying clusters found with an outsourced algorithm is the \u201cgraphical method of shading\u201d described on p. 577 of . Johnson and Wichern give this informal description: (i) arrange the distances into several classes of 15 or fewer, based on their magnitudes; (ii) replace all distances in each class by a common symbol with a certain shade of gray; (iii) reorganize the distance matrix so that items with common symbols appear in contiguous locations along the main diagonal (darker symbols correspond to smaller distances); (iv) groups of similar items correspond to patches of dark shadings. The example presented in this text is remarkably similar to the 1973 SHADE image: triangular, and made with groups of symbols. Step (i) in this method amounts to finding clusters with an ad hoc criterion, and so, differs from SHADE in the way that clusters are produced. The method of reordering in step (iii) is based on the clusters found, and so, is somewhat different from VAT. Various writers have made image displays of distance data. See, for example, the demo found under GENLAB at the website , which displays (unordered) distance matrices as color images. We could not make the GENLAB software reorder the distances to create a display like the VAT tool. However, images of this type might be used to make guesses about cluster tendency. We feel that displays such as these of the unordered distance matrix will not be particularly useful.",
+    "metadata": {
+      "section_id": 6,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 405
+    }
+  },
+  {
+    "text": "NUMERICAL EXAMPLES We expect dark, block structure along the main diagonal of the ODI for data sets containing well-separated clusters (such as those in Fig. 3). As the degree of separation between clusters decreases, the clarity of dark diagonal blocks diminishes. To illustrate this, we will use normal mixture data sets similar, to those used in Bezdek and Pal to study various cluster validity schemes. (Cluster validity is the post-clustering problem of determining if a particular computed clustering is consistent with the data.) We describe how the normal mixtures are generated. Let ei denote the ith unit vector in \u211c and I4 denote the 4 x 4 identity matrix. First, we generate a set of 128 4dimensional observations from a multivariate normal distribution having mean vector (0,0,0,0)T and covariance matrix I4. The 128 observations are then divided into 4 groups of 32 each (so c = 4). For 1 \u2264 i \u2264 4, the ith group is altered by adding \u03b1 to the ith component of each of the 32 points. (This is statistically equivalent to generating the ith group of observations from a multivariate normal distribution with mean \u00b5i = \u03b1ei and covariance matrix I.) In all, we use the 5 values \u03b1 = 4, 3, 2, 1, and 0 to get 5 data sets, each derived from the original 128 points. We denote the normal data set corresponding to a given value of \u03b1 by Normal(\u03b1). For example, the distributional means of the sample Nomal(4) are: \u00b51 = (4,0,0,0)T; \u00b52 = (0,4,0,0)T; \u00b53 = (0,0,4,0)T; and \u00b54 = (0,0,0,4)T. The means for Normal(1) are just e1, e2, e3 and e4. And when \u03b1 = 0, Normal(0) is a single Gaussian cluster centered at the origin of \u211c. For each data set Normal(\u03b1), we use the same random reordering, and then display the random and ordered dissimilarity image in Figs. 6-10 below. We expect Normal(4) to show some clear signs of cluster tendency; and we expect the visual evidence for c = 4 clusters to deteriorate as \u03b1 decreases. Relational data is derived as Euclidean distances from the object data. Fig. 6. Random and ordered dissimilarity images for Normal(4) data. Fig. 7. Random and ordered dissimilarity images for Normal(3) data. Fig. 8. Random and ordered dissimilarity images for Normal(2) data. Fig. 9. Random and ordered dissimilarity images for Normal(1) data. Fig. 10. Random and ordered dissimilarity images for Normal(0) data.",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [
+        "\n(Cluster validity is\nthe post-clustering problem of determining if a particular\ncomputed clustering is consistent with the data.)",
+        "\n(This is statistically equivalent to generating the ith\ngroup of observations from a multivariate normal distribution\nwith mean \u00b5i = \u03b1ei and covariance matrix I.)"
+      ],
+      "citations": [],
+      "word_count": 401
+    }
+  },
+  {
+    "text": "Fig. 7. Random and ordered dissimilarity images for Normal(3) data. Fig. 8. Random and ordered dissimilarity images for Normal(2) data. Fig. 9. Random and ordered dissimilarity images for Normal(1) data. Fig. 10. Random and ordered dissimilarity images for Normal(0) data. Fig. 11. Random and ordered dissimilarity images for the IRIS data. Our next example uses a small set of real data from Gowda and Diday. These data are obtained by applying a similarity measure to 5-dimensional object data, which has four quantitative, and one nominal qualitative feature values for each of eight different types of oil. The dissimilarity data, obtained by converting the similarity data from to dissimilarity data using (1) and then randomly reordering, is given by RFO =",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 120
+    }
+  },
+  {
+    "text": "Fig. 10. Random and ordered dissimilarity images for Normal(0) data. Fig. 11. Random and ordered dissimilarity images for the IRIS data. Our next example uses a small set of real data from Gowda and Diday. These data are obtained by applying a similarity measure to 5-dimensional object data, which has four quantitative, and one nominal qualitative feature values for each of eight different types of oil. The dissimilarity data, obtained by converting the similarity data from to dissimilarity data using (1) and then randomly reordering, is given by RFO =",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 90
+    }
+  },
+  {
+    "text": "Fig. 10. Random and ordered dissimilarity images for Normal(0) data. Fig. 11. Random and ordered dissimilarity images for the IRIS data. Our next example uses a small set of real data from Gowda and Diday. These data are obtained by applying a similarity measure to 5-dimensional object data, which has four quantitative, and one nominal qualitative feature values for each of eight different types of oil. The dissimilarity data, obtained by converting the similarity data from to dissimilarity data using (1) and then randomly reordering, is given by RFO = Fig. 12. Random and ordered dissimilarity images for the Fat-Oil data .",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 102
+    }
+  },
+  {
+    "text": "Fig. 11. Random and ordered dissimilarity images for the IRIS data. Our next example uses a small set of real data from Gowda and Diday. These data are obtained by applying a similarity measure to 5-dimensional object data, which has four quantitative, and one nominal qualitative feature values for each of eight different types of oil. The dissimilarity data, obtained by converting the similarity data from to dissimilarity data using (1) and then randomly reordering, is given by RFO = Fig. 12. Random and ordered dissimilarity images for the Fat-Oil data .",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 92
+    }
+  },
+  {
+    "text": "Fig. 11. Random and ordered dissimilarity images for the IRIS data. Our next example uses a small set of real data from Gowda and Diday. These data are obtained by applying a similarity measure to 5-dimensional object data, which has four quantitative, and one nominal qualitative feature values for each of eight different types of oil. The dissimilarity data, obtained by converting the similarity data from to dissimilarity data using (1) and then randomly reordering, is given by RFO = Fig. 12. Random and ordered dissimilarity images for the Fat-Oil data . VAT Fig. 13. Random and ordered dissimilarity images for linear data.",
+    "metadata": {
+      "section_id": 8,
+      "section_title": "Preliminary",
+      "equations": [],
+      "citations": [],
+      "word_count": 103
+    }
+  },
+  {
+    "text": "CONCLUSIONS We gave a new approach for visually assessing cluster tendency using ordered dissimilarity images. The proposed ordering algorithm is related to Prim\u2019s algorithm for finding the minimal spanning tree of a weighted graph. The approach is able to signal the presence of well separated clusters via the manifestation of dark blocks of pixels on the main diagonal of the ODI. This technique is applicable to all dimensions and all numerical data types, complete or incomplete. Several 2 dimensional examples suggest that ODI\u2019s may help us \u201csee\u201d geometric properties of underlying object data sets. An implementational issue is worth mentioning here. In order to get results like ours in Figs. 12 and 13, the tie breaking strategies implicit in VAT should favor additions of new points that are of minimal distance to the most recently added points. We illustrate this with an example. Suppose we have determined xk1, xk2, and xk3 and that the minimum distance between any of our determined points and the others is , say 5. If xi and xj are 2 of the other points such that xi is distance 5 from xk1 and xj is distance 5 from xk3, then the suggested tie-breaking strategy takes xk4 = xj. Additionally, precautions must be taken against roundoff error inadvertently causing two mathematically equal distances to be computed non-equally in order to replicate our results in the special cases of Figs. 12 and 13. We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract information about the geometric structure of possible clusters. Questions of interest include finding alternative, superior",
+    "metadata": {
+      "section_id": 10,
+      "section_title": "Appendix",
+      "equations": [],
+      "citations": [],
+      "word_count": 268
+    }
+  },
+  {
+    "text": "Additionally, precautions must be taken against roundoff error inadvertently causing two mathematically equal distances to be computed non-equally in order to replicate our results in the special cases of Figs. 12 and 13. We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract information about the geometric structure of possible clusters. Questions of interest include finding alternative, superior",
+    "metadata": {
+      "section_id": 10,
+      "section_title": "Appendix",
+      "equations": [],
+      "citations": [],
+      "word_count": 65
+    }
+  },
+  {
+    "text": "Additionally, precautions must be taken against roundoff error inadvertently causing two mathematically equal distances to be computed non-equally in order to replicate our results in the special cases of Figs. 12 and 13. We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract information about the geometric structure of possible clusters. Questions of interest include finding alternative, superior",
+    "metadata": {
+      "section_id": 10,
+      "section_title": "Appendix",
+      "equations": [],
+      "citations": [],
+      "word_count": 65
+    }
+  },
+  {
+    "text": "Additionally, precautions must be taken against roundoff error inadvertently causing two mathematically equal distances to be computed non-equally in order to replicate our results in the special cases of Figs. 12 and 13. We are interested in further exploring the use of imagebased approaches to assess cluster tendency and extract information about the geometric structure of possible clusters. Questions of interest include finding alternative, superior REFERENCES A.K. Jain and R.C. Dubes, Algorithms for Clustering Data. Englewood Cliffs, NJ: Prentice-Hall, 1988. B.S. Everitt, Graphical Techniques for Multivariate Data. New York, NY: North Holland, 1978. J.W. Tukey, Exploratory Data Analysis. Reading, MA: Addison-Wesley, 1977. W.S. Cleveland, Visualizing Data. Summit, NJ: Hobart Press, 1993. M. Kendall and J.D. Gibbons, Rank Correlation Methods. New York, NY: Oxford University Press, I. Borg and J. Lingoes, Multidimensional Similarity Structure Analysis. New York, NY: Springer-Verlag, A.P. Dempster, N.M. Laird and D.B. Rubin, \u201cMaximum-likelihood from incomplete data via the EM algorithm,\u201d in Journal of the Royal Statistical Society, vol. B39, pp. 1-38, 1977. J.K. Dixon, \u201cPattern recognition with partly missing data,\u201d in IEEE Transactions on Systems, Man and Cybernetics, vol. 9, pp. 617-621, 1979. R.J. Hathaway and J.C. Bezdek, \u201cClustering incomplete relational data using the non-Euclidean relational fuzzy c-means algorithm,\u201d unpublished. R.J.A. Little and D.B. Rubin, Statistical Analysis with Missing Data. New York, NY: Wiley, 1987. J.L. Schafer, Analysis of Incomplete Multivariate Data. London: Chapman & Hall, 1997. K.H. Rosen, Discrete Mathematics and Its Applications. New York, NY: McGraw-Hill, 1999. R.F. Ling, \u201cA computer generated aid for cluster analysis,\u201d in Communications of the ACM, vol. 16, 355- J.C. Bezdek and N.K. Pal, \u201cSome new indexes of cluster validity,\u201d in IEEE Transactions on Systems, Man and Cybernetics-Part B, vol. 28, pp. 301-315, 1998. J.C. Bezdek, J.M. Keller, R. Krishnapuram, L.I. Kuncheva and N.R. Pal, \u201cWill the real IRIS data please stand up?\u201d in IEEE Transactions on Fuzzy Systems, vol. 7, pp. 368-369, 1999. K.C. Gowda and E. Diday, \u201cSymbolic clustering using a new dissimilarity measure,\u201d in Pattern Recognition, vol. 24, pp. 567-578, 1991. GENLAB is at: www-it.et.tudelft.nl/~imds/index.html R. A. Johnson and D.A. Wichern, Applied Multivariate Statistical Analysis, 3rd Ed., Prentice-Hall, Englewood Cliffs, NJ, 1992. J. C. Bezdek, Numerical Taxonomy with Fuzzy Sets,\u201d J. Math. Biology, 1, 57-71, 1974. View publication stats",
+    "metadata": {
+      "section_id": 10,
+      "section_title": "Appendix",
+      "equations": [],
+      "citations": [],
+      "word_count": 372
+    }
+  }
+]

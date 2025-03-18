@@ -1,0 +1,28 @@
+# Ignore virtual environments
+/ragenv/
+/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and cache
+logs/
+*.log
+.cache/
+checkpoints/
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.iml
+
+# Ignore large files and data storage
+vector_store/
+*.faiss
+*.pkl
