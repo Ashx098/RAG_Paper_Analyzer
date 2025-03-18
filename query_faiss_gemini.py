@@ -36,7 +36,7 @@ bm25_tokenized = [chunk.split() for chunk in bm25_corpus]
 bm25 = BM25Okapi(bm25_tokenized)
 
 # 🔹 Configure Gemini API
-genai.configure(api_key="AIzaSyCNOT1X_kRDcsx6UOZFCWNAUqFao4ffK-4")
+genai.configure(api_key="Your Api Key")
 gemini_model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Change model if needed
 
 def google_search(query):
